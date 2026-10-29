@@ -43,7 +43,7 @@ Progress, code drafts and portfolio builds are saved in the browser (localStorag
 
 ### Lessons so far
 
-- **Computer Science:** Algorithms are recipes, Find the bug, How a loop works, Making decisions
+- **Computer Science:** Algorithms are recipes, Find the bug, How a loop works, Making decisions, Loops that wait
 - **Robotics:** Reading a light sensor, Follow the line
 - **Software Engineering:** What a web page is made of, Style it with CSS
 - **AI:** Teach a neuron

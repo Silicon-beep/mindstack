@@ -27,6 +27,11 @@ Claims about how MindStack itself behaves (the robot, its mats, the code editor,
 - **"The answer is always True or False."** "The `bool` type has exactly two constant instances: `True` and `False`." [Python docs: bool](https://docs.python.org/3/library/stdtypes.html#boolean-type-bool)
 - **`if` and `else`: exactly one plan runs.** Python checks the conditions in order and runs the block for the first one that's true; `else` runs when none are. [Python tutorial: if statements](https://docs.python.org/3/tutorial/controlflow.html#if-statements)
 
+### Loops that wait
+
+- **A while loop keeps repeating as long as its question is True, asks before every repeat, and might never run the lines inside.** Python's reference: the `while` statement "repeatedly tests the expression and, if it is true, executes the first suite; if the expression is false (which may be the first time it is tested)… the loop terminates." [Python reference: the while statement](https://docs.python.org/3/reference/compound_stmts.html#the-while-statement). The tutorial: "The while loop executes as long as the condition… remains true." [Python tutorial](https://docs.python.org/3/tutorial/introduction.html#first-steps-towards-programming)
+- **A for loop repeats a set number of times.** See How a loop works: `range(10)` generates 10 values.
+
 ## Robotics
 
 ### Reading a light sensor

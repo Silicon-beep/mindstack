@@ -14,6 +14,9 @@ type Props = {
   animate?: boolean
 }
 
+// How wide a mat is drawn, in its own viewBox units: the squares plus a 6-unit border on each side.
+export const stageWidth = (world: World) => world.cols * CELL + 12
+
 const center = (p: Pos) => ({ x: p.x * CELL + CELL / 2, y: p.y * CELL + CELL / 2 })
 const fromKey = (key: string) => {
   const [x, y] = key.split(',').map(Number)
@@ -46,7 +49,7 @@ export function RobotStage({ world, robot, trail = [], collected = [], marks = [
     .join(' ')
 
   return (
-    <svg viewBox={`-6 -6 ${width + 12} ${height + 12}`} role="img" aria-label={summary} className="h-auto w-full">
+    <svg viewBox={`-6 -6 ${stageWidth(world)} ${height + 12}`} role="img" aria-label={summary} className="h-auto w-full">
       <rect x={-6} y={-6} width={width + 12} height={height + 12} rx={18} className="fill-blue-tint" />
       <g strokeWidth={1.5} className="stroke-blue-icon">
         {Array.from({ length: world.cols + 1 }, (_, i) => (

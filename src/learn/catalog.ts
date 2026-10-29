@@ -24,7 +24,7 @@ const units: Record<string, { title: string; lessons: Entry[] }> = {
   },
   'computer-science': {
     title: 'Thinking in steps',
-    lessons: [...computerScienceLessons, soon('loops-that-wait', 'Loops that wait', 10), soon('maze-runner', 'Project: maze runner', 15)],
+    lessons: [...computerScienceLessons, soon('maze-runner', 'Project: maze runner', 15)],
   },
   ai: {
     title: 'How machines learn',

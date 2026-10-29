@@ -1,5 +1,5 @@
-import { Answers, Captioned, CodeBlock, ErrorCard, Flow, Pair, Recipe, RobotSnapshot } from '../components/visuals'
-import { allOf, collectStars, endAt, maxLines, reachGoal, usesFor, usesIf, visitAll } from '../robot/checks'
+import { Answers, Captioned, CodeBlock, ErrorCard, Flow, Pair, Recipe, RobotSnapshot, SameScale } from '../components/visuals'
+import { allOf, collectStars, endAt, maxLines, reachGoal, usesFor, usesIf, usesWhile, visitAll } from '../robot/checks'
 import { parseWorld } from '../robot/world'
 import type { Lesson } from '../types'
 
@@ -381,4 +381,105 @@ export const makingDecisions: Lesson = {
   ],
 }
 
-export const computerScienceLessons = [algorithmsAreRecipes, findTheBug, howALoopWorks, makingDecisions]
+// ---------------------------------------------------------------- 5. Loops that wait
+
+const hall = parseWorld(['>....#'])
+const shortHall = parseWorld(['>.#'])
+const longHall = parseWorld(['>......#'])
+const predictHall = parseWorld(['>...#'])
+const driveHall = parseWorld(['>.....#'])
+const spiral = parseWorld(['>....', '####.', '..G#.', '.###.', '.....'])
+const whileClear = 'while robot.front_is_clear():\n    robot.move()'
+
+export const loopsThatWait: Lesson = {
+  id: 'loops-that-wait',
+  title: 'Loops that wait',
+  minutes: 10,
+  goal: 'Use a while loop to repeat steps until something changes.',
+  screens: [
+    {
+      stage: 'see',
+      kind: 'explain',
+      title: 'Repeat until something changes',
+      frames: [
+        {
+          title: 'Keep going while it’s True',
+          text: 'A for loop repeats a set number of times. A while loop keeps repeating as long as its question is True. Here: as long as the way ahead is clear.',
+          visual: (
+            <div className="flex w-full max-w-[360px] flex-col gap-4">
+              <CodeBlock code={whileClear} highlight={[1]} />
+              <RobotSnapshot world={hall} program={whileClear} />
+            </div>
+          ),
+        },
+        {
+          title: 'It asks before every repeat',
+          text: 'Before each repeat, the loop asks its question again. As soon as the answer is False, it stops. If the answer is False the very first time, the lines inside never run.',
+          visual: <Flow steps={['Is the front clear?', 'Yes: move']} loop />,
+        },
+        {
+          title: 'Same code, any distance',
+          text: 'The same two lines stop at the wall in a short hall and in a long one. You don’t count the squares: the loop works out how many repeats it needs.',
+          visual: (
+            <SameScale
+              mats={[
+                { caption: 'Short hall', world: shortHall, program: whileClear },
+                { caption: 'Long hall', world: longHall, program: whileClear },
+              ]}
+            />
+          ),
+        },
+      ],
+    },
+    {
+      stage: 'do',
+      kind: 'predict',
+      title: 'How far does it go?',
+      prompt: 'How many squares does the robot move?',
+      code: whileClear,
+      visual: <RobotSnapshot world={predictHall} />,
+      options: [
+        { text: '3 squares', correct: true, feedback: 'Yes. After 3 moves the wall is right in front, so front_is_clear() is False and the loop stops.' },
+        { text: '4 squares', feedback: 'That would put the robot inside the wall. The loop asks before every move, so it stops when the wall is right in front.' },
+        { text: 'It never stops', feedback: 'It does stop. Once the wall is right in front, front_is_clear() is False and the loop ends.' },
+      ],
+    },
+    {
+      stage: 'do',
+      kind: 'robot',
+      title: 'Drive to the wall',
+      intro: 'Finish the loop so the robot drives up to the wall and stops right in front of it. Don’t count the squares: let the loop do it.',
+      task: {
+        world: driveHall,
+        starter: '# Move until the wall is right in front\nwhile robot.front_is_clear():\n',
+        chips: ['move'],
+        check: allOf(
+          usesWhile,
+          endAt(
+            { x: 5, y: 0 },
+            'The robot stopped right in front of the wall, and you never told it how far. The loop worked it out.',
+            'The robot should stop right in front of the wall.',
+          ),
+        ),
+        hint: 'Under the while line, add robot.move() with 4 spaces in front. The loop repeats it for as long as the front is clear.',
+        solution: `# Move until the wall is right in front\n${whileClear}\n`,
+      },
+    },
+    {
+      stage: 'build',
+      kind: 'robot',
+      title: 'Spiral to the flag',
+      intro: 'The path to the flag spirals inwards. Keep the robot going until it reaches the flag: move when the way is clear, and turn right when it isn’t.',
+      task: {
+        world: spiral,
+        starter: '# Keep going until the robot reaches the flag\nwhile not robot.at_goal():\n    robot.move()\n',
+        chips: ['move', 'turnRight', 'ifElse'],
+        check: allOf(usesWhile, reachGoal('The robot found its own way to the flag, and you didn’t count a single step. That’s what while is for!')),
+        hint: 'Inside the loop, check before you move: if the front is clear, move. Otherwise, turn right. The “if / else” button adds those lines for you.',
+        solution: `# Keep going until the robot reaches the flag\nwhile not robot.at_goal():\n${ifElse.replace(/^/gm, '    ')}\n`,
+      },
+    },
+  ],
+}
+
+export const computerScienceLessons = [algorithmsAreRecipes, findTheBug, howALoopWorks, makingDecisions, loopsThatWait]

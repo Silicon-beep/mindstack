@@ -5,7 +5,7 @@ import { useKeyboardScroll } from '../../lib/useKeyboardScroll'
 import { highlight, type Language } from '../highlight'
 import { run } from '../robot/interpreter'
 import { LIGHT_ON_FLOOR, LIGHT_ON_LINE, type World } from '../robot/world'
-import { RobotStage, type Mark } from './RobotStage'
+import { RobotStage, stageWidth, type Mark } from './RobotStage'
 
 export function CodeBlock({
   code,
@@ -76,6 +76,21 @@ export function Recipe({ title, steps }: { title: string; steps: string[] }) {
           </li>
         ))}
       </ol>
+    </div>
+  )
+}
+
+// Mats drawn at the same scale, one under another, so a longer hall really looks longer.
+export function SameScale({ mats }: { mats: { caption: string; world: World; program?: string }[] }) {
+  const widest = Math.max(...mats.map(({ world }) => stageWidth(world)))
+  return (
+    <div className="flex w-full max-w-[360px] flex-col gap-4">
+      {mats.map(({ caption, world, program }) => (
+        <figure key={caption} className="flex flex-col gap-2" style={{ width: `${(stageWidth(world) / widest) * 100}%` }}>
+          <RobotSnapshot world={world} program={program} />
+          <figcaption className="text-sm font-semibold text-violet-dark">{caption}</figcaption>
+        </figure>
+      ))}
     </div>
   )
 }
