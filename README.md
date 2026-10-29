@@ -147,6 +147,6 @@ a11y/                 the accessibility checks (Playwright and axe)
 
 New lessons are checked automatically, because the checks read `catalog.ts`. A new page needs adding to `pages` in `a11y/site.ts`.
 
-When a check fails, the message names the element and the problem. `npx playwright show-report` opens the full report, including a step-by-step trace of each failure. On a new computer, run `npx playwright install chromium` once first.
+When a check fails, the message names the element and the problem. `npx playwright show-report` opens the full report, including a step-by-step trace of each failure. On a new computer, run `npx playwright install chromium` once first. GitHub runs the same checks on every push (`.github/workflows/checks.yml`).
 
 Automated checks can't judge everything. Whether the wording is clear, or a screen reader reads things in a sensible order, still needs a person to try it.
