@@ -274,7 +274,7 @@ export const infoPages: Record<'about' | 'accessibility' | 'help' | 'privacy', I
           },
           {
             lead: 'Keyboard and screen readers',
-            text: 'A clear ring shows where keyboard focus is. Pages use headings and landmarks, icon buttons have labels, and the robot mat describes where the robot is. Moving to a new screen moves focus to its heading.',
+            text: 'A clear ring shows where keyboard focus is. Pages use headings and landmarks, icon buttons have labels, and the robot mat describes where the robot is. When you step through your code, a screen reader reads out what each line did. Moving to a new screen moves focus to its heading.',
           },
           { lead: 'No surprises', text: 'Nothing plays by itself, there are no popups, and nothing flashes.' },
         ],
@@ -461,6 +461,15 @@ export const learnUi = {
     bright: 'bright floor',
     console: 'Printed output',
     consoleEmpty: 'Nothing printed yet.',
+    // Where the robot is: the mat's description, and part of what screen readers hear at each Step.
+    robotAt: (column: number, row: number, facing: string) => `Robot at column ${column}, row ${row}, facing ${facing}.`,
+    // Read out to screen readers. Step and Pause say what just happened; while running it only says so.
+    announceRunning: 'Running your code.',
+    announceReady: 'Ready to step through your code.',
+    announceStep: (step: number, steps: number, line: number, code: string) => `Step ${step} of ${steps}: line ${line}, ${code}.`,
+    announceStar: (left: number, total: number) => `Picked up a star. ${left} of ${total} left.`,
+    announcePrint: (value: string) => `Printed ${value}.`,
+    announceSensor: (reading: number, surface: string) => `Light sensor reads ${reading}, ${surface}.`,
     showHint: 'Show a hint',
     hideHint: 'Hide hint',
     showSolution: 'Show me a solution',

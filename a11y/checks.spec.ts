@@ -1,5 +1,5 @@
 // The checks are only useful if they fail when something's wrong, so this page breaks each rule once.
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 import { findProblems } from './checks'
 
 const BROKEN = `<!doctype html>

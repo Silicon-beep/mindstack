@@ -1,5 +1,8 @@
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import { featuredProject, footer, learnUi, lessonPreview } from '../src/content'
+import { run } from '../src/learn/robot/interpreter'
+import { DIRECTION_NAMES } from '../src/learn/robot/world'
+import { expect, test } from './fixtures'
 import { atScreen, lessons, nextButton, pages, seed } from './site'
 
 declare global {
@@ -55,6 +58,31 @@ test.describe('Keyboard', () => {
     const presses = first.kind === 'explain' ? first.frames.length : 1
     for (let i = 0; i < presses; i++) await nextButton(page).click()
     await expect(page.getByRole('heading', { level: 1, name: second.title, exact: true })).toBeFocused()
+  })
+})
+
+test.describe('Screen readers', () => {
+  test('Step reads out what each line did', async ({ page }) => {
+    const copy = learnUi.exercise
+    // The first robot exercise whose starter code moves the robot at least once.
+    const target = lessons
+      .flatMap(({ key, url, lesson }) => lesson.screens.map((screen, index) => ({ key, url, index, screen })))
+      .flatMap((s) => (s.screen.kind === 'robot' ? [{ ...s, task: s.screen.task }] : []))
+      .find(({ task }) => run(task.starter, task.world).frames.length > 1)
+    if (!target) throw new Error('No robot exercise to step through')
+    const steps = run(target.task.starter, target.task.world).frames
+    const first = steps[1]
+    const firstLine = target.task.starter.split('\n')[first.line - 1].trim()
+
+    await seed(page, atScreen(target.key, target.index))
+    await page.goto(target.url)
+    const status = page.getByRole('status')
+    const step = page.getByRole('button', { name: copy.step, exact: true })
+    await step.click()
+    await expect(status).toContainText(copy.announceReady)
+    await step.click()
+    await expect(status).toContainText(copy.announceStep(1, steps.length - 1, first.line, firstLine))
+    await expect(status).toContainText(copy.robotAt(first.robot.x + 1, first.robot.y + 1, DIRECTION_NAMES[first.robot.dir]))
   })
 })
 

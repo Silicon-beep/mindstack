@@ -1,3 +1,4 @@
+import { learnUi } from '../../content'
 import { cellKey, DIRECTION_NAMES, type Pos, type Robot, type World } from '../robot/world'
 
 const CELL = 40
@@ -36,7 +37,7 @@ export function RobotStage({ world, robot, trail = [], collected = [], marks = [
   const at = center(robot)
   const goal = world.goal && center(world.goal)
   const summary = [
-    `Robot at column ${robot.x + 1}, row ${robot.y + 1}, facing ${DIRECTION_NAMES[robot.dir]}.`,
+    learnUi.exercise.robotAt(robot.x + 1, robot.y + 1, DIRECTION_NAMES[robot.dir]),
     world.goal && `Flag at column ${world.goal.x + 1}, row ${world.goal.y + 1}.`,
     world.stars.size > 0 && `${starsLeft.length} of ${world.stars.size} stars left.`,
     world.line.size > 0 && 'A dark line is taped on the mat.',

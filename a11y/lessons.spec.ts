@@ -1,9 +1,10 @@
 // Every screen of every lesson, in each state a learner can reach: hints showing, a wrong answer,
 // code part-way through running, a failed run, solved, and the lesson-complete screen.
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import { learnUi } from '../src/content'
 import type { Screen } from '../src/learn/types'
 import { checkAccessibility } from './checks'
+import { expect, test } from './fixtures'
 import { atScreen, lessons, nextButton, seed } from './site'
 
 const copy = learnUi.lesson

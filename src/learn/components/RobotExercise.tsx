@@ -4,7 +4,7 @@ import { learnUi } from '../../content'
 import { readProgress, progress } from '../progress'
 import { CHIPS } from '../robot/chips'
 import { run, type RunResult } from '../robot/interpreter'
-import { lightAt, LIGHT_ON_LINE } from '../robot/world'
+import { DIRECTION_NAMES, lightAt, LIGHT_ON_LINE } from '../robot/world'
 import type { RobotTask } from '../types'
 import { CodeEditor, type CodeEditorHandle } from './CodeEditor'
 import { Feedback } from './Feedback'
@@ -115,6 +115,25 @@ export function RobotExercise({ task, draftKey, onSolved }: Props) {
   const running = mode === 'playing' || mode === 'paused'
   const light = lightAt(task.world, robot)
 
+  // What screen readers hear. Step and Pause read out what just happened. While the robot runs it only
+  // says it's running, because a step every 420ms would pile up faster than anyone can listen.
+  function announcement() {
+    if (!result || !frame || mode === 'edit') return ''
+    if (mode === 'playing') return copy.announceRunning
+    const where = copy.robotAt(robot.x + 1, robot.y + 1, DIRECTION_NAMES[robot.dir])
+    // Frame 0 is the start, before any line has run. If a run ends there, the feedback says why.
+    if (index === 0) return mode === 'paused' ? `${copy.announceReady} ${where}` : ''
+    const previous = result.frames[index - 1]
+    const line = code.split('\n')[frame.line - 1]?.trim() ?? ''
+    const parts = [copy.announceStep(index, result.frames.length - 1, frame.line, line), where]
+    if (frame.collectedLength > previous.collectedLength) {
+      parts.push(copy.announceStar(task.world.stars.size - frame.collectedLength, task.world.stars.size))
+    }
+    if (frame.outputLength > previous.outputLength) parts.push(copy.announcePrint(result.output[frame.outputLength - 1]))
+    if (task.showSensor) parts.push(copy.announceSensor(light, light === LIGHT_ON_LINE ? copy.dark : copy.bright))
+    return parts.join(' ')
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
       <div className="flex min-w-0 flex-col gap-4">
@@ -163,6 +182,10 @@ export function RobotExercise({ task, draftKey, onSolved }: Props) {
             {copy.reset}
           </button>
         </div>
+
+        <p role="status" className="sr-only">
+          {announcement()}
+        </p>
 
         <div aria-live="polite">
           {outcome && (

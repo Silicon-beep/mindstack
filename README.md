@@ -133,7 +133,7 @@ a11y/                 the accessibility checks (Playwright and axe)
 - **Focus mode:** in a lesson, focus mode hides everything but the current task.
 - **One goal per screen:** every screen shows a single task. Next stays locked until that task is done, and hints and solutions are always one tap away.
 - **Contrast, targets, focus:** text meets WCAG AA contrast. Every button and link is at least 44px tall and shows a visible focus ring. Moving to a new screen moves keyboard focus to its heading.
-- **Markup:** the page uses semantic landmarks (`header`, `nav`, `main`, `section`, `footer`). Icon-only buttons have an `aria-label`, decorative SVGs are hidden from screen readers, and the robot mat describes where the robot is.
+- **Markup:** the page uses semantic landmarks (`header`, `nav`, `main`, `section`, `footer`). Icon-only buttons have an `aria-label`, decorative SVGs are hidden from screen readers, and the robot mat describes where the robot is. Pressing Step reads out what each line did and where the robot ended up.
 - **No surprises:** nothing autoplays, there are no popups, and nothing flashes.
 
 ### Automated checks

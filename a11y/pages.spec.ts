@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 import { learnUi } from '../src/content'
 import { checkAccessibility } from './checks'
 import { pages, partWay, seed } from './site'
