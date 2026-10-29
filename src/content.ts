@@ -31,7 +31,7 @@ export const hero = {
     'Visual lessons, hands-on projects and real-world skills — designed for ADHD minds, visual thinkers and kinesthetic learners.',
   primaryCta: { label: 'Start learning', href: '/#paths' },
   secondaryCta: { label: 'Try your first lesson', href: '/learn/computer-science/algorithms-are-recipes' },
-  perks: ['10–15 min lessons', 'Code in your browser', 'No experience needed'],
+  perks: ['Most lessons under 15 min', 'Code in your browser', 'No experience needed'],
 } as const
 
 // The interactive lesson card in the hero. The code it runs is in LessonPreview.tsx.
@@ -61,12 +61,14 @@ export const learningPaths = {
   eyebrow: 'Learning paths',
   title: 'Find your path',
   subtitle: 'Pick a track and start building real skills — at your own pace.',
+  // On each card. The numbers are counted from catalog.ts.
+  lessonCount: (ready: number, soon: number) =>
+    `${ready} lesson${ready === 1 ? '' : 's'}${soon > 0 ? ` · ${soon} coming soon` : ''}`,
   paths: [
     {
       id: 'software-engineering',
       title: 'Software Engineering',
       description: 'Build real web apps, APIs and tools you can show off.',
-      projects: '24 projects',
       icon: CodeXml,
       tone: 'violet',
     },
@@ -74,15 +76,13 @@ export const learningPaths = {
       id: 'computer-science',
       title: 'Computer Science',
       description: 'See how computers think, solve problems and handle data.',
-      projects: '18 projects',
       icon: Network,
       tone: 'green',
     },
     {
       id: 'ai',
       title: 'AI',
-      description: 'Explore machine learning and neural networks by training your own.',
-      projects: '15 projects',
+      description: 'Explore machine learning by training your own neurons, then wiring them into a neural network.',
       icon: BrainCircuit,
       tone: 'orange',
     },
@@ -90,7 +90,6 @@ export const learningPaths = {
       id: 'robotics',
       title: 'Robotics',
       description: 'Build, program and control robots — real ones and simulations.',
-      projects: '12 projects',
       icon: Bot,
       tone: 'blue',
     },
@@ -238,13 +237,13 @@ export const infoPages: Record<'about' | 'accessibility' | 'help' | 'privacy', I
       {
         heading: 'Built for brains that wander',
         text: [
-          'Lessons take 10–15 minutes and show one clear goal per screen. Focus mode hides everything but the task. There are no streaks and no pressure: you pick up exactly where you left off.',
+          'Most lessons take under 15 minutes and show one clear goal per screen. Focus mode hides everything but the task. There are no streaks and no pressure: you pick up exactly where you left off.',
         ],
       },
       {
         heading: 'Where it’s at',
         text: [
-          'MindStack is new. The first lessons are ready in all four paths, and more are on the way. It’s free, and you don’t need an account.',
+          'MindStack is new. The AI path is complete, the other three paths have their first lessons, and more are on the way. It’s free, and you don’t need an account.',
         ],
         links: [
           { label: 'Start learning', href: '/learn' },
@@ -274,7 +273,7 @@ export const infoPages: Record<'about' | 'accessibility' | 'help' | 'privacy', I
           },
           {
             lead: 'Keyboard and screen readers',
-            text: 'A clear ring shows where keyboard focus is. Pages use headings and landmarks, icon buttons have labels, and the robot mat describes where the robot is. When you step through your code, a screen reader reads out what each line did. Moving to a new screen moves focus to its heading.',
+            text: 'A clear ring shows where keyboard focus is. Pages use headings and landmarks, icon buttons have labels, and the robot mat describes where the robot is. When you step through your code, a screen reader reads out what each line did. Moving to a new screen moves focus to its heading. In AI lessons, each chart says in words how many examples it sorts correctly, and you can draw on the grid with the arrow keys and Space.',
           },
           { lead: 'No surprises', text: 'Nothing plays by itself, there are no popups, and nothing flashes.' },
         ],
@@ -286,7 +285,7 @@ export const infoPages: Record<'about' | 'accessibility' | 'help' | 'privacy', I
       {
         heading: 'What we know isn’t perfect yet',
         text: [
-          'MindStack hasn’t had an independent accessibility audit yet. The robot and neuron exercises are visual at heart. They describe what’s happening in text, but they may not work well with every screen reader yet.',
+          'MindStack hasn’t had an independent accessibility audit yet. The robot, neuron, network and drawing exercises are visual at heart. They describe what’s happening in text, but they may not work well with every screen reader yet.',
         ],
       },
       {
@@ -322,7 +321,7 @@ export const infoPages: Record<'about' | 'accessibility' | 'help' | 'privacy', I
       {
         heading: 'I’m stuck on a lesson',
         text: [
-          'Press Show a hint under the task. Show me a solution appears after the hint, and Start over puts the code back how it began. Using them costs nothing.',
+          'Press Show a hint under the task. Show me a solution appears after the hint, and Start over puts the task back how it began. Using them costs nothing.',
         ],
       },
       {
@@ -334,6 +333,12 @@ export const infoPages: Record<'about' | 'accessibility' | 'help' | 'privacy', I
       {
         heading: 'Can I use the code editor with a keyboard?',
         text: ['Yes. Tab indents your code. To leave the editor, press Esc, then Tab.'],
+      },
+      {
+        heading: 'Can I draw with a keyboard?',
+        text: [
+          'Yes. In the drawing grid, the arrow keys move between squares, Home and End jump to either end of a row, and Space fills or clears a square.',
+        ],
       },
       {
         heading: 'Something isn’t working',
@@ -401,9 +406,11 @@ export const learnUi = {
     title: 'Your learning',
     intro: 'Everything you do saves in this browser. No streaks and no pressure: pick up whenever you like.',
     continueEyebrow: 'Pick up where you left off',
+    // Once the last lesson you opened is finished, the card suggests the next unfinished one.
+    upNextEyebrow: 'Up next',
     continue: 'Continue',
     startTitle: 'Start your first lesson',
-    startText: 'Lessons take 10–15 minutes and need no experience. Algorithms are recipes is a good first one, or pick any path below.',
+    startText: 'Most lessons take under 15 minutes and need no experience. Algorithms are recipes is a good first one, or pick any path below.',
     startLesson: 'Start learning',
     startHref: '/learn/computer-science/algorithms-are-recipes',
     pathsTitle: 'Your paths',
@@ -426,7 +433,9 @@ export const learnUi = {
     startPath: 'Start the first lesson',
     continuePath: 'Continue where you left off',
     nextPath: 'Start the next lesson',
+    // Every lesson done: allDone when the path has lessons coming soon, pathDone when it has none.
     allDone: 'You’ve finished every lesson so far. New ones are on the way.',
+    pathDone: 'You’ve finished every lesson in this path.',
   },
   lesson: {
     stages: { see: 'See it', do: 'Do it', build: 'Build it' },
@@ -479,6 +488,11 @@ export const learnUi = {
     checksDone: (done: number, total: number) => `${done} of ${total} done`,
     webSolved: 'Everything on the checklist is done. Nice work!',
     correctCount: (correct: number, total: number) => `${correct} of ${total} sorted correctly`,
+    weightLabel: (clue: string) => `How much ${clue.toLowerCase()} matters`,
+    biasLabel: 'Bias',
+    // What a neuron Build it saves to the portfolio: its weights and bias.
+    neuronSummary: (w1: string, clueA: string, w2: string, clueB: string, bias: string) =>
+      `${w1} × ${clueA}  ${w2} × ${clueB}  bias ${bias}`,
     train: 'Train on one example',
     trainMany: 'Train 5 times',
     neuronSolved: 'Every example is sorted correctly.',

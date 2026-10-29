@@ -108,8 +108,7 @@ export function NeuronExercise({ task, onSolved }: Props) {
   const { goal } = task
 
   useEffect(() => {
-    if (solved)
-      onSolved(`${show(weights.w1)} × ${task.axes[0]}  ${show(weights.w2)} × ${task.axes[1]}  bias ${show(weights.b)}`)
+    if (solved) onSolved(copy.neuronSummary(show(weights.w1), task.axes[0], show(weights.w2), task.axes[1], show(weights.b)))
   }, [solved])
 
   function trainOnce(w: Weights, points: NeuronPoint[]): Weights {
@@ -128,9 +127,9 @@ export function NeuronExercise({ task, onSolved }: Props) {
   }
 
   const sliders = [
-    { key: 'w1' as const, label: `How much ${task.axes[0].toLowerCase()} matters`, min: -2, max: 2, step: 0.1 },
-    { key: 'w2' as const, label: `How much ${task.axes[1].toLowerCase()} matters`, min: -2, max: 2, step: 0.1 },
-    { key: 'b' as const, label: 'Bias', min: -15, max: 15, step: 0.5 },
+    { key: 'w1' as const, label: copy.weightLabel(task.axes[0]), min: -2, max: 2, step: 0.1 },
+    { key: 'w2' as const, label: copy.weightLabel(task.axes[1]), min: -2, max: 2, step: 0.1 },
+    { key: 'b' as const, label: copy.biasLabel, min: -15, max: 15, step: 0.5 },
   ]
 
   return (

@@ -36,7 +36,7 @@ When someone shares a MindStack link, chat apps and social sites show a title, a
 | Your learning | `/learn` | Pick up where you left off, progress for each path, and your portfolio of builds |
 | Path | `/paths/computer-science` | The path's lesson map: what's done, what's next, what's coming soon |
 | Lesson | `/learn/computer-science/how-a-loop-works` | The lesson player, with focus mode |
-| Search | `/search?q=loop` | Finds lessons by title, goal or topic |
+| Search | `/search?q=loop` | Finds lessons by the words in their title, goal, screens and See it parts, or their path's name and description. Each word you type matches the start of a word, so "learn" finds "learning" (`src/learn/search.ts`) |
 | About, Accessibility, Help, Privacy | `/about`, `/accessibility`, `/help`, `/privacy` | Short info pages linked from the footer. Their wording is `infoPages` in `content.ts` |
 
 Progress, code drafts and portfolio builds are saved in the browser (localStorage). There are no accounts yet and no streaks. "Clear my progress" at the bottom of `/learn` resets everything.
@@ -54,7 +54,7 @@ The other paths also list their next few lessons as "Coming soon".
 
 - **Homepage and page text** (buttons, headings, messages) is in **`src/content.ts`**.
 - **Lesson content** (explanations, questions, code challenges) is in **`src/learn/lessons/`**, one file per path.
-- **Which lessons are in each path, and in what order**, is in **`src/learn/catalog.ts`**.
+- **Which lessons are in each path, and in what order**, is in **`src/learn/catalog.ts`**. The lesson counts on the homepage path cards come from there, so they update by themselves.
 
 In `content.ts`, `href` sets where a link goes and `tone` picks a color family (`'violet'`, `'green'`, `'orange'` or `'blue'`). `icon` takes any icon from [lucide.dev/icons](https://lucide.dev/icons): add it to the import at the top of the file, then use it.
 
@@ -135,7 +135,7 @@ a11y/                 the accessibility checks (Playwright and axe)
 - **Focus mode:** in a lesson, focus mode hides everything but the current task.
 - **One goal per screen:** every screen shows a single task. Next stays locked until that task is done, and hints and solutions are always one tap away.
 - **Contrast, targets, focus:** text meets WCAG AA contrast. Every button and link is at least 44px tall and shows a visible focus ring. Moving to a new screen moves keyboard focus to its heading.
-- **Markup:** the page uses semantic landmarks (`header`, `nav`, `main`, `section`, `footer`). Icon-only buttons have an `aria-label`, decorative SVGs are hidden from screen readers, and the robot mat describes where the robot is. Pressing Step reads out what each line did and where the robot ended up.
+- **Markup:** the page uses semantic landmarks (`header`, `nav`, `main`, `section`, `footer`). Icon-only buttons have an `aria-label`, decorative SVGs are hidden from screen readers, and the robot mat describes where the robot is. Pressing Step reads out what each line did and where the robot ended up. In AI lessons, each chart says how many examples it sorts correctly, and the drawing grid works with the arrow keys, Home, End and Space.
 - **No surprises:** nothing autoplays, there are no popups, and nothing flashes.
 
 ### Automated checks

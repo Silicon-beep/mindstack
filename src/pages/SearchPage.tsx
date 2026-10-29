@@ -2,32 +2,18 @@ import { useSearchParams } from 'react-router'
 import { Search } from 'lucide-react'
 import { AppLink } from '../components/AppLink'
 import { learnUi } from '../content'
-import { isPlayable, paths } from '../learn/catalog'
+import { isPlayable } from '../learn/catalog'
+import { searchLessons } from '../learn/search'
 import { tones } from '../lib/tones'
 import { usePageTitle } from '../lib/usePageTitle'
-
-const allLessons = paths.flatMap((path) => path.unit.lessons.map((entry, i) => ({ path, entry, number: i + 1 })))
 
 export function SearchPage() {
   const copy = learnUi.search
   const [params, setParams] = useSearchParams()
   const query = params.get('q')?.trim() ?? ''
-  const words = query.toLowerCase().split(/\s+/).filter(Boolean)
   usePageTitle(query ? `${copy.title}: ${query}` : copy.title)
 
-  const results = words.length
-    ? allLessons.filter(({ path, entry }) => {
-        const text = [
-          entry.title,
-          path.title,
-          path.unit.title,
-          ...(isPlayable(entry) ? [entry.goal, ...entry.screens.map((screen) => screen.title)] : []),
-        ]
-          .join(' ')
-          .toLowerCase()
-        return words.every((word) => text.includes(word))
-      })
-    : []
+  const results = searchLessons(query)
 
   return (
     <div className="page-container max-w-4xl py-10 sm:py-14">

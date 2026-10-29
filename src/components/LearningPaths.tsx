@@ -1,4 +1,5 @@
 import { learningPaths } from '../content'
+import { paths, playable } from '../learn/catalog'
 import { PathCard } from './PathCard'
 import { SectionHeader } from './SectionHeader'
 
@@ -12,11 +13,18 @@ export function LearningPaths() {
         subtitle={learningPaths.subtitle}
       />
       <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {learningPaths.paths.map((path) => (
-          <li key={path.title}>
-            <PathCard {...path} href={`/paths/${path.id}`} />
-          </li>
-        ))}
+        {paths.map((path) => {
+          const ready = playable(path).length
+          return (
+            <li key={path.id}>
+              <PathCard
+                {...path}
+                count={learningPaths.lessonCount(ready, path.unit.lessons.length - ready)}
+                href={`/paths/${path.id}`}
+              />
+            </li>
+          )
+        })}
       </ul>
     </section>
   )

@@ -78,7 +78,7 @@ export function PathPage() {
               <ArrowRight className="h-5 w-5 shrink-0" />
             </AppLink>
           ) : (
-            <p className="max-w-xs font-medium">{copy.allDone}</p>
+            <p className="max-w-xs font-medium">{lessons.every(isPlayable) ? copy.pathDone : copy.allDone}</p>
           )}
         </div>
       </header>

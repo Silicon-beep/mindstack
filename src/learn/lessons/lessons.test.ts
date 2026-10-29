@@ -140,3 +140,10 @@ describe('doodle lessons', () => {
     expect(predict(learned, doodlePoint({ wide: 5, tall: 2 }, 1))).toBe(1)
   })
 })
+
+describe('site copy', () => {
+  it('most lessons take under 15 minutes, as the homepage, About and Your learning say', () => {
+    const entries = paths.flatMap((path) => path.unit.lessons)
+    expect(entries.filter((entry) => entry.minutes < 15).length).toBeGreaterThan(entries.length / 2)
+  })
+})

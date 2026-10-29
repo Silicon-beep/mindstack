@@ -10,18 +10,33 @@ import { usePageTitle } from '../lib/usePageTitle'
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
 
+// The first unfinished lesson after this one: later in its path, then earlier in it, then in the other
+// paths in order. Null when every lesson is finished.
+function nextUnfinished(pathId: string, lessonId: string, completed: Record<string, string>) {
+  const own = paths.filter((path) => path.id === pathId)
+  const candidates = [...own, ...paths.filter((path) => path.id !== pathId)].flatMap((path) => {
+    const lessons = playable(path)
+    const at = path.id === pathId ? lessons.findIndex((lesson) => lesson.id === lessonId) : -1
+    return [...lessons.slice(at + 1), ...lessons.slice(0, at + 1)].map((lesson) => ({ path, lesson }))
+  })
+  const found = candidates.find(({ path, lesson }) => !completed[lessonKey(path.id, lesson.id)])
+  return found ? getLesson(found.path.id, found.lesson.id) : null
+}
+
 export function LearnPage() {
   const copy = learnUi.dashboard
   const { completed, reached, builds, last } = useProgress()
   const [confirming, setConfirming] = useState(false)
   usePageTitle(copy.title)
 
-  // Resume the last lesson, or the one after it if it's finished.
+  // Resume the last lesson. Once it's finished, suggest the next unfinished one instead.
   const lastLesson = last ? getLesson(last.pathId, last.lessonId) : null
   const lastDone = lastLesson && completed[lessonKey(lastLesson.path.id, lastLesson.lesson.id)]
-  const resume = lastDone && lastLesson.next ? getLesson(lastLesson.path.id, lastLesson.next.id) : lastLesson
+  const upNext = lastDone ? nextUnfinished(lastLesson.path.id, lastLesson.lesson.id, completed) : null
+  const resume = upNext ?? lastLesson
   const resumeKey = resume ? lessonKey(resume.path.id, resume.lesson.id) : ''
   const resumeScreen = resume?.lesson.screens[Math.min(reached[resumeKey] ?? 0, resume.lesson.screens.length - 1)]
+  const opened = !upNext || (reached[resumeKey] ?? 0) > 0
   const savedBuilds = Object.values(builds).sort((a, b) => b.at.localeCompare(a.at))
 
   return (
@@ -35,7 +50,7 @@ export function LearnPage() {
           className={`mt-8 flex flex-col gap-6 rounded-panel border border-line p-6 shadow-soft sm:p-8 md:flex-row md:items-center md:justify-between ${tones[resume.path.tone].tint}`}
         >
           <div>
-            <p className="eyebrow">{copy.continueEyebrow}</p>
+            <p className="eyebrow">{upNext ? copy.upNextEyebrow : copy.continueEyebrow}</p>
             <h2 id="resume-title" className="mt-2 text-2xl font-bold tracking-tight">
               {resume.lesson.title}
             </h2>
@@ -45,7 +60,7 @@ export function LearnPage() {
             </p>
           </div>
           <AppLink href={`/learn/${resume.path.id}/${resume.lesson.id}`} className="btn btn-dark shrink-0 self-start md:self-center">
-            {copy.continue}
+            {opened ? copy.continue : learnUi.path.start}
             <ArrowRight className="h-5 w-5" />
           </AppLink>
         </section>
