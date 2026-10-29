@@ -58,6 +58,13 @@ Claims about how MindStack itself behaves (the robot, its mats, the code editor,
 - **One-sided examples teach the wrong lesson.** The same course calls this coverage bias: it "occurs if data is not selected in a representative fashion". [Google: types of bias](https://developers.google.com/machine-learning/crash-course/fairness/types-of-bias)
 - **What this neuron learns** (size counts for a lot and bumpiness for almost nothing, a big smooth apple is called an orange, all four new fruit are wrong, and adding big apples and small oranges fixes it) is checked by `npm test`, which runs the lesson's own data through the trainer.
 
+### When the neuron gets it wrong
+
+- **A false alarm (false positive) and a miss (false negative).** Google's Machine Learning Crash Course, with the same spam example: a false positive is "A not-spam email misclassified as spam", and a false negative is "A spam email misclassified as not-spam". [Google: thresholds and the confusion matrix](https://developers.google.com/machine-learning/crash-course/classification/thresholding)
+- **A stricter filter catches more spam but makes more false alarms, and a more relaxed one the opposite.** The same page: raising the threshold means fewer emails flagged as spam, so fewer false positives but more false negatives, and lowering it does the reverse. [Google: thresholds](https://developers.google.com/machine-learning/crash-course/classification/thresholding)
+- **Which mistake matters more depends on the job.** In most real uses "one kind of mistake (FN or FP) is more costly than the other", and for spam "it often makes sense to prioritize recall… or precision… or some balance of the two". [Google: accuracy, precision and recall](https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall)
+- **"No straight line can sort all 12 of these."** Checked by `npm test`, which tries every line the sliders can make on the lesson's emails. The best sorts 10.
+
 ## Software Engineering
 
 ### What a web page is made of

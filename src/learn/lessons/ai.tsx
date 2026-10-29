@@ -1,6 +1,6 @@
 import { NeuronPlane, show } from '../components/NeuronExercise'
-import { Flow } from '../components/visuals'
-import { trainFully } from '../neuron'
+import { Captioned, Flow, Pair } from '../components/visuals'
+import { predict, trainFully } from '../neuron'
 import type { Lesson, NeuronPoint, Weights } from '../types'
 
 const fruit = {
@@ -281,4 +281,139 @@ export const trainingDataMatters: Lesson = {
   ],
 }
 
-export const aiLessons = [teachANeuron, trainingDataMatters]
+// ---------------------------------------------------------------- 3. When the neuron gets it wrong
+
+const emailNames = { classes: email.classes, axes: email.axes }
+// A messy inbox: one real newsletter full of links and exclamation marks, and one spam that looks normal.
+const messy = [
+  pt(1, 1, 0),
+  pt(2.5, 0.5, 0),
+  pt(0.5, 2.5, 0),
+  pt(3, 2.5, 0),
+  pt(1.5, 4, 0),
+  pt(7, 6.5, 0),
+  pt(7, 8.5, 1),
+  pt(8.5, 8.5, 1),
+  pt(5.5, 8.5, 1),
+  pt(8.5, 5.5, 1),
+  pt(6, 4.5, 1),
+  pt(2, 2.5, 1),
+]
+const messyLine = { w1: 0.3, w2: 0.6, b: -4 }
+// The same filter, stricter (a lower bar for calling something spam) and more relaxed.
+const stricter = { w1: 0.6, w2: 0.6, b: -8 }
+const relaxed = { w1: 0.6, w2: 0.6, b: -9 }
+const several = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`
+const mistakesOf = (w: Weights) => {
+  const falseAlarms = messy.filter((p) => p.label === 0 && predict(w, p) === 1).length
+  const missed = messy.filter((p) => p.label === 1 && predict(w, p) === 0).length
+  return `${several(falseAlarms, 'false alarm')}, ${missed} missed`
+}
+
+function MistakeCards() {
+  const cards = [
+    { title: 'False alarm', also: 'a false positive', text: 'A real email goes to the spam folder.' },
+    { title: 'Miss', also: 'a false negative', text: 'A spam email lands in your inbox.' },
+  ]
+  return (
+    <div className="grid w-full max-w-md gap-3">
+      {cards.map((card) => (
+        <div key={card.title} className="rounded-card bg-white p-5 shadow-soft">
+          <p className="text-lg font-bold">
+            {card.title} <span className="text-base font-semibold text-muted">({card.also})</span>
+          </p>
+          <p className="mt-1 text-muted">{card.text}</p>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export const whenItGetsItWrong: Lesson = {
+  id: 'when-it-gets-it-wrong',
+  title: 'When the neuron gets it wrong',
+  minutes: 10,
+  goal: 'Tell the two kinds of mistake apart, and choose which one a neuron should avoid.',
+  screens: [
+    {
+      stage: 'see',
+      kind: 'explain',
+      title: 'Even a good neuron makes mistakes',
+      frames: [
+        {
+          title: 'No line sorts them all',
+          text: 'Real examples are messy. A newsletter can be full of links and exclamation marks, and some spam looks like a normal email. No straight line can sort all 12 of these.',
+          visual: (
+            <div className="w-full max-w-sm">
+              <NeuronPlane weights={messyLine} points={messy} {...emailNames} />
+            </div>
+          ),
+        },
+        {
+          title: 'Two kinds of mistake',
+          text: 'A false alarm, or false positive, sends a real email to the spam folder. A miss, or false negative, lets spam into your inbox.',
+          visual: <MistakeCards />,
+        },
+        {
+          title: 'Moving the line swaps one for the other',
+          text: 'A stricter filter catches more spam, but sends more real emails to spam. A more relaxed one lets more spam through. Which mistake matters more depends on the job.',
+          visual: (
+            <Pair>
+              <Captioned caption={`Stricter: ${mistakesOf(stricter)}`}>
+                <NeuronPlane weights={stricter} points={messy} {...emailNames} />
+              </Captioned>
+              <Captioned caption={`More relaxed: ${mistakesOf(relaxed)}`}>
+                <NeuronPlane weights={relaxed} points={messy} {...emailNames} />
+              </Captioned>
+            </Pair>
+          ),
+        },
+      ],
+    },
+    {
+      stage: 'do',
+      kind: 'predict',
+      title: 'Name the mistake',
+      prompt: 'The filter sends your friend’s birthday email to the spam folder. What kind of mistake is that?',
+      options: [
+        { text: 'A false alarm (false positive)', correct: true, feedback: 'Yes. It said spam, but the email was real. That’s a false alarm.' },
+        { text: 'A miss (false negative)', feedback: 'A miss is the other way round: spam that gets into your inbox. This was a real email sent to spam.' },
+        { text: 'Not a mistake', feedback: 'It is a mistake: a real email ended up in the spam folder.' },
+      ],
+    },
+    {
+      stage: 'do',
+      kind: 'neuron',
+      title: 'Sort as many as you can',
+      intro: 'No line can sort all 12 emails. Move the line until at least 9 are sorted correctly.',
+      task: {
+        mode: 'manual',
+        start: { w1: 1, w2: -1, b: 0 },
+        points: messy,
+        goal: { atLeast: 9 },
+        ...emailNames,
+        hint: 'Make both weights positive first. Then drag the bias until the line sits between most of the spam and most of the real emails.',
+        solution: { w1: 0.2, w2: 0.4, b: -3 },
+        success: 'Nice line. With examples this messy, no line gets every email right.',
+      },
+    },
+    {
+      stage: 'build',
+      kind: 'neuron',
+      title: 'Never lose a real email',
+      intro: 'Tune the filter so no real email goes to spam, and it still catches at least 3 of the 6 spam emails.',
+      task: {
+        mode: 'manual',
+        start: { w1: 1, w2: -1, b: 0 },
+        points: messy,
+        goal: { noFalseAlarms: true, caughtAtLeast: 3 },
+        ...emailNames,
+        hint: 'Keep both weights positive and drag the bias down until False alarms reads 0. Then nudge the weights to catch as much spam as you can.',
+        solution: { w1: 0.4, w2: 0.4, b: -5.5 },
+        success: 'No real email goes to spam now. The price is some spam in your inbox: you swapped one mistake for the other.',
+      },
+    },
+  ],
+}
+
+export const aiLessons = [teachANeuron, trainingDataMatters, whenItGetsItWrong]

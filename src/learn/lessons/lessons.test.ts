@@ -62,4 +62,16 @@ describe('neuron lessons', () => {
     expect(predict(learned, task.tests![0])).toBe(1) // the big, smooth apple is called an orange
     expect(assess(task, learned, []).testsRight).toBe(0) // it gets all the new fruit wrong
   })
+
+  it('When the neuron gets it wrong: no line the sliders can make sorts all 12 emails, as the lesson says', () => {
+    const [task] = neuronTasksIn('when-it-gets-it-wrong')
+    let best = 0
+    for (let w1 = -20; w1 <= 20; w1++)
+      for (let w2 = -20; w2 <= 20; w2++)
+        for (let b = -30; b <= 30; b++) {
+          const weights = { w1: w1 / 10, w2: w2 / 10, b: b / 2 }
+          best = Math.max(best, task.points.filter((p) => predict(weights, p) === p.label).length)
+        }
+    expect(best).toBeLessThan(task.points.length)
+  })
 })

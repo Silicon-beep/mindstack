@@ -46,7 +46,7 @@ Progress, code drafts and portfolio builds are saved in the browser (localStorag
 - **Computer Science:** Algorithms are recipes, Find the bug, How a loop works, Making decisions, Loops that wait
 - **Robotics:** Reading a light sensor, Follow the line
 - **Software Engineering:** What a web page is made of, Style it with CSS
-- **AI:** Teach a neuron, Why training data matters
+- **AI:** Teach a neuron, Why training data matters, When the neuron gets it wrong
 
 Each path also lists its next few lessons as "Coming soon".
 
