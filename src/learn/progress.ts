@@ -21,7 +21,7 @@ export type Progress = {
   focus: boolean
 }
 
-const STORAGE_KEY = 'mindstack:progress:v1'
+export const STORAGE_KEY = 'mindstack:progress:v1'
 const EMPTY: Progress = { completed: {}, reached: {}, drafts: {}, builds: {}, last: null, focus: false }
 
 function load(): Progress {

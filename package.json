@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:a11y": "tsc -p a11y && playwright test",
     "deploy": "sh scripts/deploy-pages.sh"
   },
   "dependencies": {
@@ -17,7 +18,10 @@
     "react-router": "^8.5.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/container-queries": "^0.1.1",
+    "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",

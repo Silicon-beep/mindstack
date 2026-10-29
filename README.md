@@ -12,6 +12,7 @@ You need Node.js 22.22 or newer.
 npm install
 npm run dev       # start the dev server at http://localhost:5173
 npm test          # run the code-engine and lesson tests
+npm run test:a11y # run the accessibility checks in Chrome (about 2 minutes)
 npm run build     # type-check, then build to dist/
 npm run preview   # serve the built site locally
 npm run deploy    # publish to GitHub Pages
@@ -69,7 +70,7 @@ A lesson is a list of screens. Each screen has a `stage` (`'see'`, `'do'` or `'b
 | `web` | Write HTML and CSS with a live preview and a checklist that ticks itself off |
 | `neuron` | Tune a neuron with sliders, or press Train and watch it learn |
 
-To add one, copy a lesson object in `src/learn/lessons/`, change it, and put it in its path's list in `catalog.ts`, replacing a `soon(...)` entry if there is one. Then run `npm test`: it checks that every robot challenge can be solved by its own solution and that its starter code doesn't already pass.
+To add one, copy a lesson object in `src/learn/lessons/`, change it, and put it in its path's list in `catalog.ts`, replacing a `soon(...)` entry if there is one. Then run `npm test`: it checks that every robot challenge can be solved by its own solution and that its starter code doesn't already pass. `npm run test:a11y` then checks each screen of the new lesson for accessibility.
 
 ### Robot mats and code
 
@@ -121,6 +122,7 @@ src/
   lib/                tones and small helpers
   index.css           base styles, focus rings, buttons, reduced-motion rules
 tailwind.config.ts    design tokens
+a11y/                 the accessibility checks (Playwright and axe)
 ```
 
 ## Accessibility
@@ -131,3 +133,20 @@ tailwind.config.ts    design tokens
 - **Contrast, targets, focus:** text meets WCAG AA contrast. Every button and link is at least 44px tall and shows a visible focus ring. Moving to a new screen moves keyboard focus to its heading.
 - **Markup:** the page uses semantic landmarks (`header`, `nav`, `main`, `section`, `footer`). Icon-only buttons have an `aria-label`, decorative SVGs are hidden from screen readers, and the robot mat describes where the robot is.
 - **No surprises:** nothing autoplays, there are no popups, and nothing flashes.
+
+### Automated checks
+
+`npm run test:a11y` builds the site, opens it in Chrome at desktop size and at phone size, and checks every page and every lesson screen:
+
+- **axe** runs the WCAG 2.2 A and AA rules plus its best practices. In lessons it runs in every state a learner can reach: hint showing, a wrong answer, code part-way through running, solved, and lesson complete.
+- **Targets:** every link, button and field is at least 44×44px.
+- **Keyboard:** Tab reaches every control. Each one shows a focus ring with 3:1 contrast that nothing covers, not even the sticky lesson footer. Esc then Tab leaves the code editor.
+- **Phone widths:** nothing scrolls sideways at 320px wide.
+- **Motion:** with reduced motion on, nothing glides. With it off, nothing moves or pops up until you press something.
+- **Focus moves where it should:** Skip to content works, Escape closes the phone menu, and opening a page or lesson screen puts focus at its start.
+
+New lessons are checked automatically, because the checks read `catalog.ts`. A new page needs adding to `pages` in `a11y/site.ts`.
+
+When a check fails, the message names the element and the problem. `npx playwright show-report` opens the full report, including a step-by-step trace of each failure. On a new computer, run `npx playwright install chromium` once first.
+
+Automated checks can't judge everything. Whether the wording is clear, or a screen reader reads things in a sensible order, still needs a person to try it.
