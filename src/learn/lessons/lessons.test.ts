@@ -2,8 +2,9 @@
 // Neuron tasks likewise, and where a lesson says what the neuron learns, the data must agree.
 import { describe, expect, it } from 'vitest'
 import { paths, playable } from '../catalog'
-import { assess, predict, trainFully } from '../neuron'
+import { assess, networkSays, predict, trainFully } from '../neuron'
 import { run } from '../robot/interpreter'
+import type { Network, NetworkTask, NeuronPoint } from '../types'
 
 const robotTasks = paths.flatMap((path) =>
   playable(path).flatMap((lesson) =>
@@ -65,13 +66,43 @@ describe('neuron lessons', () => {
 
   it('When the neuron gets it wrong: no line the sliders can make sorts all 12 emails, as the lesson says', () => {
     const [task] = neuronTasksIn('when-it-gets-it-wrong')
-    let best = 0
-    for (let w1 = -20; w1 <= 20; w1++)
-      for (let w2 = -20; w2 <= 20; w2++)
-        for (let b = -30; b <= 30; b++) {
-          const weights = { w1: w1 / 10, w2: w2 / 10, b: b / 2 }
-          best = Math.max(best, task.points.filter((p) => predict(weights, p) === p.label).length)
-        }
-    expect(best).toBeLessThan(task.points.length)
+    expect(bestSingleLine(task.points)).toBeLessThan(task.points.length)
+  })
+})
+
+// The most examples any line the neuron's sliders can make sorts correctly.
+function bestSingleLine(points: NeuronPoint[]) {
+  let best = 0
+  for (let w1 = -20; w1 <= 20; w1++)
+    for (let w2 = -20; w2 <= 20; w2++)
+      for (let b = -30; b <= 30; b++) {
+        const weights = { w1: w1 / 10, w2: w2 / 10, b: b / 2 }
+        best = Math.max(best, points.filter((p) => predict(weights, p) === p.label).length)
+      }
+  return best
+}
+
+const networkTasks = paths.flatMap((path) =>
+  playable(path).flatMap((lesson) =>
+    lesson.screens.flatMap((screen) => (screen.kind === 'network' ? [{ name: `${lesson.id}: ${screen.title}`, task: screen.task }] : [])),
+  ),
+)
+
+describe('network lessons', () => {
+  const sorts = (task: NetworkTask, net: Network) => task.points.every((p) => networkSays(net, p) === p.label)
+
+  it.each(networkTasks)('$name can be done, and is not done at the start', ({ task }) => {
+    expect(sorts(task, task.start)).toBe(false)
+    expect(sorts(task, task.solution)).toBe(true)
+  })
+
+  it('Many neurons make a network: no single line sorts these emails, but the network can', () => {
+    for (const { task } of networkTasks) expect(bestSingleLine(task.points)).toBeLessThan(task.points.length)
+  })
+
+  it('Many neurons make a network: the suspicious-email checker needs C to say yes when either does', () => {
+    const [, build] = networkTasks.filter(({ name }) => name.startsWith('many-neurons'))
+    for (let a = 0; a <= 10; a += 0.5)
+      for (let b = 0; b <= 10; b += 0.5) expect(sorts(build.task, { a, b, rule: 'and' })).toBe(false)
   })
 })

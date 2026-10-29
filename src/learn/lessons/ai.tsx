@@ -1,3 +1,4 @@
+import { NetworkPlane } from '../components/NetworkExercise'
 import { NeuronPlane, show } from '../components/NeuronExercise'
 import { Captioned, Flow, Pair } from '../components/visuals'
 import { predict, trainFully } from '../neuron'
@@ -416,4 +417,158 @@ export const whenItGetsItWrong: Lesson = {
   ],
 }
 
-export const aiLessons = [teachANeuron, trainingDataMatters, whenItGetsItWrong]
+// ---------------------------------------------------------------- 4. Many neurons make a network
+
+// Spam has lots of links and lots of exclamation marks. Newsletters have lots of links, and excited
+// friends lots of exclamation marks, but neither is spam.
+const spamCorner = [
+  pt(1, 1.5, 0),
+  pt(2.5, 2.5, 0),
+  pt(9, 1.5, 0),
+  pt(9.5, 4.5, 0),
+  pt(1.5, 9, 0),
+  pt(4.5, 9.5, 0),
+  pt(6, 6, 1),
+  pt(8, 8, 1),
+  pt(7, 9, 1),
+  pt(9, 7, 1),
+]
+// Suspicious if it has lots of links, or lots of exclamation marks, or both.
+const suspicious = [
+  pt(1, 1, 0),
+  pt(2.5, 2, 0),
+  pt(1.5, 3.5, 0),
+  pt(3.5, 1, 0),
+  pt(4.5, 4.5, 0),
+  pt(6, 0.5, 1),
+  pt(8, 2.5, 1),
+  pt(0.5, 6, 1),
+  pt(2.5, 8.5, 1),
+  pt(8, 8, 1),
+]
+// As good as one line gets with the spam corner: 9 of 10.
+const bestOneLine = { w1: 1, w2: 1, b: -15 }
+const fencedIn = { a: 5, b: 5, rule: 'and' as const }
+
+function NetworkDiagram() {
+  const neuron = (cx: number, cy: number, name: string) => (
+    <g>
+      <circle cx={cx} cy={cy} r={22} className="fill-violet" />
+      <text x={cx} y={cy + 6} textAnchor="middle" className="fill-white text-[17px] font-bold">{name}</text>
+    </g>
+  )
+  return (
+    <svg
+      viewBox="0 0 360 220"
+      role="img"
+      aria-label="Links go into neuron A, which asks: lots of links? Exclamation marks go into neuron B, which asks: lots of exclamation marks? Neuron C takes both answers and says spam only when both say yes."
+      className="h-auto w-full max-w-md"
+    >
+      <g strokeWidth={3} className="stroke-violet">
+        <line x1={96} y1={58} x2={128} y2={58} />
+        <line x1={96} y1={160} x2={128} y2={158} />
+        <line x1={172} y1={58} x2={230} y2={96} />
+        <line x1={172} y1={158} x2={230} y2={120} />
+        <line x1={274} y1={108} x2={290} y2={108} />
+      </g>
+      <rect x={4} y={38} width={92} height={40} rx={20} className="fill-white" />
+      <text x={50} y={63} textAnchor="middle" className="fill-ink text-[14px] font-semibold">Links</text>
+      <rect x={4} y={136} width={92} height={48} rx={20} className="fill-white" />
+      <text x={50} y={156} textAnchor="middle" className="fill-ink text-[13px] font-semibold">
+        Exclamation
+        <tspan x={50} dy={16}>marks</tspan>
+      </text>
+      {neuron(150, 58, 'A')}
+      <text x={150} y={22} textAnchor="middle" className="fill-violet-dark text-[13px] font-semibold">Lots of links?</text>
+      {neuron(150, 158, 'B')}
+      <text x={150} y={206} textAnchor="middle" className="fill-violet-dark text-[13px] font-semibold">Lots of exclamation marks?</text>
+      {neuron(252, 108, 'C')}
+      <text x={252} y={152} textAnchor="middle" className="fill-violet-dark text-[13px] font-semibold">Both yes?</text>
+      <rect x={290} y={88} width={66} height={40} rx={20} className="fill-white" />
+      <text x={323} y={113} textAnchor="middle" className="fill-ink text-[14px] font-semibold">Spam?</text>
+    </svg>
+  )
+}
+
+export const manyNeurons: Lesson = {
+  id: 'many-neurons',
+  title: 'Many neurons make a network',
+  minutes: 14,
+  goal: 'Connect three neurons into a network that sorts what one neuron can’t.',
+  screens: [
+    {
+      stage: 'see',
+      kind: 'explain',
+      title: 'When one line isn’t enough',
+      frames: [
+        {
+          title: 'One neuron, one straight line',
+          text: 'Spam has lots of links and lots of exclamation marks. Newsletters have just links, and excited friends just exclamation marks. One neuron can only draw one straight line, and no straight line fences off just the spam.',
+          visual: (
+            <div className="w-full max-w-sm">
+              <NeuronPlane weights={bestOneLine} points={spamCorner} {...emailNames} />
+            </div>
+          ),
+        },
+        {
+          title: 'Split the job between neurons',
+          text: 'Give each question to its own neuron. A asks “lots of links?” and B asks “lots of exclamation marks?”. A third neuron, C, takes their answers and says spam only when both say yes.',
+          visual: <NetworkDiagram />,
+        },
+        {
+          title: 'Together they fence off a corner',
+          text: 'A and B each draw their own line, and C keeps only the corner past both. Neurons passing answers on to other neurons: that’s a neural network. Real ones have layers of many neurons and learn all their weights in training.',
+          visual: (
+            <div className="w-full max-w-sm">
+              <NetworkPlane net={fencedIn} points={spamCorner} {...emailNames} />
+            </div>
+          ),
+        },
+      ],
+    },
+    {
+      stage: 'do',
+      kind: 'predict',
+      title: 'What does the network say?',
+      prompt: 'An email has lots of links but hardly any exclamation marks. A says yes and B says no. What does C say?',
+      visual: <NetworkDiagram />,
+      options: [
+        { text: 'Not spam', correct: true, feedback: 'Right. Only A said yes, and C needs both A and B to say yes.' },
+        { text: 'Spam', feedback: 'C says spam only when both say yes, and B said no.' },
+        { text: 'It can’t tell', feedback: 'It can: one yes and one no means not spam.' },
+      ],
+    },
+    {
+      stage: 'do',
+      kind: 'network',
+      title: 'Fence off the spam',
+      intro: 'Slide the two lines so that only the spam is in the shaded corner.',
+      task: {
+        points: spamCorner,
+        ...emailNames,
+        start: { a: 2, b: 8, rule: 'and' },
+        hint: 'A’s line should sit just to the left of the spam, and B’s line just below it. Newsletters and excited friends belong outside the corner.',
+        solution: fencedIn,
+        success: 'Every email sorted. Two neurons drew the lines and a third combined them: a tiny neural network.',
+      },
+    },
+    {
+      stage: 'build',
+      kind: 'network',
+      title: 'Build a suspicious-email checker',
+      intro: 'Now any email with lots of links or lots of exclamation marks counts as suspicious. Move the lines, and choose when neuron C says yes.',
+      task: {
+        points: suspicious,
+        classes: ['Looks fine', 'Suspicious'],
+        axes: email.axes,
+        start: { a: 7, b: 7, rule: 'and' },
+        chooseRule: true,
+        hint: 'With “both say yes”, only the top-right corner counts. Switch C to “either says yes”, then move both lines to just past the emails that look fine.',
+        solution: { a: 5, b: 5, rule: 'or' },
+        success: 'Same neurons, a different rule in C, a whole new shape. How neurons are connected decides what a network can do.',
+      },
+    },
+  ],
+}
+
+export const aiLessons = [teachANeuron, trainingDataMatters, whenItGetsItWrong, manyNeurons]

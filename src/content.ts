@@ -493,6 +493,14 @@ export const learnUi = {
     testsNotYet: (wrong: number) =>
       `Every training example is sorted, but ${wrong} new example${wrong === 1 ? ' is' : 's are'} still wrong. What kinds of example has it never seen?`,
     mistakes: (falseAlarms: number, misses: number) => `False alarms: ${falseAlarms} · Missed: ${misses}`,
+    networkNeuron: (name: string, clue: string) => `Neuron ${name}: “lots of ${clue}” means more than`,
+    networkRule: (answer: string) => `Neuron C says “${answer}” when`,
+    networkRuleFixed: (answer: string, both: boolean) => `Neuron C says “${answer}” when ${both ? 'both A and B say yes' : 'either A or B says yes'}.`,
+    ruleBoth: 'both A and B say yes',
+    ruleEither: 'either A or B says yes',
+    networkLegend: (answer: string) => `The shaded area is where the network says “${answer}”.`,
+    networkSummary: (a: number, clueA: string, b: number, clueB: string, both: boolean) =>
+      `A: ${clueA} above ${a} · B: ${clueB} above ${b} · C: ${both ? 'both' : 'either'} say yes`,
   },
   search: {
     title: 'Search',

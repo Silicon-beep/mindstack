@@ -1,10 +1,17 @@
 // The neuron behind the AI lessons: a perceptron. It answers class 1 when w1 × x + w2 × y + bias is above
 // zero. The exercises, the lessons' pictures and the tests all use these, so they always agree.
-import type { NeuronPoint, NeuronTask, Weights } from './types'
+import type { Network, NeuronPoint, NeuronTask, Weights } from './types'
 
 type P = { x: number; y: number }
 
 export const predict = (w: Weights, p: P) => (w.w1 * p.x + w.w2 * p.y + w.b > 0 ? 1 : 0)
+
+// A two-question network: neurons A and B each check one clue, and neuron C combines their answers.
+export function networkSays(net: Network, p: P) {
+  const a = p.x > net.a
+  const b = p.y > net.b
+  return (net.rule === 'and' ? a && b : a || b) ? 1 : 0
+}
 const round = (n: number) => Math.round(n * 100) / 100
 
 // Perceptron rule. The bias moves faster than the weights so training finishes in a handful of presses.

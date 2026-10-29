@@ -90,6 +90,14 @@ async function tryEachState(page: Page, screen: Screen) {
       await button(page, exercise.showSolution).click()
       await expect(nextButton(page)).toBeEnabled()
       await after('solved')
+      return
+
+    case 'network':
+      await button(page, exercise.showHint).click()
+      await after('with the hint showing')
+      await button(page, exercise.showSolution).click()
+      await expect(nextButton(page)).toBeEnabled()
+      await after('solved')
   }
 }
 

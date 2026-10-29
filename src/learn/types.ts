@@ -48,6 +48,21 @@ export type NeuronTask = {
   success?: string
 }
 
+// A tiny network: neuron A says yes when the first clue is above `a`, neuron B when the second clue is above
+// `b`, and neuron C answers class 1 when both say yes ('and') or when either does ('or').
+export type Network = { a: number; b: number; rule: 'and' | 'or' }
+export type NetworkTask = {
+  points: NeuronPoint[]
+  classes: [string, string]
+  axes: [string, string]
+  start: Network
+  // Let the learner choose neuron C's rule. Otherwise it stays as it starts.
+  chooseRule?: boolean
+  hint: string
+  solution: Network
+  success?: string
+}
+
 type ScreenBase = { stage: Stage; title: string; intro?: string }
 
 export type Screen = ScreenBase &
@@ -57,6 +72,7 @@ export type Screen = ScreenBase &
     | { kind: 'robot'; task: RobotTask }
     | { kind: 'web'; task: WebTask }
     | { kind: 'neuron'; task: NeuronTask }
+    | { kind: 'network'; task: NetworkTask }
   )
 
 export type Lesson = {

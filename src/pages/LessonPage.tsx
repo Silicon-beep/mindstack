@@ -6,6 +6,7 @@ import { SiteLayout } from '../components/SiteLayout'
 import { learnUi } from '../content'
 import { getLesson } from '../learn/catalog'
 import { Explainer } from '../learn/components/Explainer'
+import { NetworkExercise } from '../learn/components/NetworkExercise'
 import { NeuronExercise } from '../learn/components/NeuronExercise'
 import { Predict } from '../learn/components/Predict'
 import { RobotExercise } from '../learn/components/RobotExercise'
@@ -53,6 +54,8 @@ function ScreenView({ screen, frame, screenKey, onSolved }: { screen: Screen; fr
       return <WebExercise task={screen.task} draftKey={screenKey} onSolved={onSolved} />
     case 'neuron':
       return <NeuronExercise task={screen.task} onSolved={onSolved} />
+    case 'network':
+      return <NetworkExercise task={screen.task} onSolved={onSolved} />
   }
 }
 

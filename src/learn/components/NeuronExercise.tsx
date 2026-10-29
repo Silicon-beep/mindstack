@@ -5,17 +5,11 @@ import { assess, nudge, predict } from '../neuron'
 import type { NeuronPoint, NeuronTask, Weights } from '../types'
 import { Feedback } from './Feedback'
 import { HelpTools } from './HelpTools'
+import { Plot, px, py } from './Plot'
 
 type P = { x: number; y: number }
 
 export const show = (n: number) => (n > 0 ? `+${n}` : String(n))
-
-// The plot covers 0–10 on both axes.
-const LEFT = 44
-const TOP = 12
-const SIZE = 280
-const px = (x: number) => LEFT + (x / 10) * SIZE
-const py = (y: number) => TOP + SIZE - (y / 10) * SIZE
 
 // Splits the plot square along the neuron's line: the part where it answers class 1, plus the line itself.
 function split(w: Weights) {
@@ -54,65 +48,18 @@ type PlaneProps = {
 }
 
 export function NeuronPlane({ weights, points, tests = [], classes, axes, focus = null }: PlaneProps) {
-  const copy = learnUi.exercise
   const { region, edge } = split(weights)
-  const right = (list: NeuronPoint[]) => list.filter((p) => predict(weights, p) === p.label).length
-  const label = [
-    `${copy.correctCount(right(points), points.length)}.`,
-    tests.length > 0 && `${copy.testCount(right(tests), tests.length)}.`,
-    `${classes[0]} are circles, ${classes[1]} are squares.`,
-    tests.length > 0 && copy.testsShape,
-  ]
-    .filter(Boolean)
-    .join(' ')
   return (
-    <svg viewBox="0 0 336 340" role="img" aria-label={label} className="h-auto w-full">
-      <rect x={px(0)} y={py(10)} width={SIZE} height={SIZE} className="fill-violet-tint" />
+    <Plot axes={axes} classes={classes} points={points} tests={tests} focus={focus} answer={(p) => predict(weights, p)}>
       {region.length > 2 && <polygon points={region.map((p) => `${px(p.x)},${py(p.y)}`).join(' ')} className="fill-orange-tint" />}
-      <rect x={px(0)} y={py(10)} width={SIZE} height={SIZE} strokeWidth={1.5} className="fill-none stroke-ink/30" />
       {edge.length === 2 && (
         <line x1={px(edge[0].x)} y1={py(edge[0].y)} x2={px(edge[1].x)} y2={py(edge[1].y)} strokeWidth={3} strokeLinecap="round" className="stroke-ink" />
       )}
-      {[0, 5, 10].map((v) => (
-        <g key={v} className="fill-subtle text-[12px]">
-          <text x={px(v)} y={py(0) + 18} textAnchor="middle">{v}</text>
-          <text x={px(0) - 8} y={py(v) + 4} textAnchor="end">{v}</text>
-        </g>
-      ))}
-      <text x={px(5)} y={336} textAnchor="middle" className="fill-muted text-[13px] font-semibold">{axes[0]} →</text>
-      <text x={12} y={py(5)} textAnchor="middle" transform={`rotate(-90 12 ${py(5)})`} className="fill-muted text-[13px] font-semibold">
-        {axes[1]} →
-      </text>
-      {[...points.map((p) => ({ p, hollow: false })), ...tests.map((p) => ({ p, hollow: true }))].map(({ p, hollow }, i) => {
-        const x = px(p.x)
-        const y = py(p.y)
-        const wrong = predict(weights, p) !== p.label
-        const stroke = hollow ? 3 : 0
-        return (
-          <g key={i}>
-            {wrong && <circle cx={x} cy={y} r={14} strokeWidth={2} strokeDasharray="4 3" className="fill-none stroke-ink" />}
-            {focus === i && <circle cx={x} cy={y} r={18} strokeWidth={3} className="fill-none stroke-violet-dark" />}
-            {p.label === 0 ? (
-              <circle cx={x} cy={y} r={8} strokeWidth={stroke} className={hollow ? 'fill-white stroke-violet' : 'fill-violet'} />
-            ) : (
-              <rect
-                x={x - 8}
-                y={y - 8}
-                width={16}
-                height={16}
-                rx={3}
-                strokeWidth={stroke}
-                className={hollow ? 'fill-white stroke-orange-dark' : 'fill-orange-dark'}
-              />
-            )}
-          </g>
-        )
-      })}
-    </svg>
+    </Plot>
   )
 }
 
-function Legend({ classes, tests }: { classes: [string, string]; tests: boolean }) {
+export function Legend({ classes, tests }: { classes: [string, string]; tests: boolean }) {
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium text-muted">
       <span className="inline-flex items-center gap-2">

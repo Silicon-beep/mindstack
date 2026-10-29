@@ -46,7 +46,7 @@ Progress, code drafts and portfolio builds are saved in the browser (localStorag
 - **Computer Science:** Algorithms are recipes, Find the bug, How a loop works, Making decisions, Loops that wait
 - **Robotics:** Reading a light sensor, Follow the line
 - **Software Engineering:** What a web page is made of, Style it with CSS
-- **AI:** Teach a neuron, Why training data matters, When the neuron gets it wrong
+- **AI:** Teach a neuron, Why training data matters, When the neuron gets it wrong, Many neurons make a network
 
 Each path also lists its next few lessons as "Coming soon".
 
@@ -68,7 +68,8 @@ A lesson is a list of screens. Each screen has a `stage` (`'see'`, `'do'` or `'b
 | `predict` | "What will happen?" with multiple choice. Every answer explains itself. |
 | `robot` | Write Python-style code that drives a robot on a grid |
 | `web` | Write HTML and CSS with a live preview and a checklist that ticks itself off |
-| `neuron` | Tune a neuron with sliders, or press Train and watch it learn |
+| `neuron` | Tune a neuron with sliders, or press Train and watch it learn. Optional: new examples to test it on (`tests`), examples the learner can add (`extras`), and a `goal` other than sorting everything |
+| `network` | Slide the lines of two neurons, A and B, while neuron C combines their answers (both say yes, or either does) |
 
 To add one, copy a lesson object in `src/learn/lessons/`, change it, and put it in its path's list in `catalog.ts`, replacing a `soon(...)` entry if there is one. Then run `npm test`: it checks that every robot challenge can be solved by its own solution and that its starter code doesn't already pass. `npm run test:a11y` then checks each screen of the new lesson for accessibility.
 

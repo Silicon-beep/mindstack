@@ -65,6 +65,13 @@ Claims about how MindStack itself behaves (the robot, its mats, the code editor,
 - **Which mistake matters more depends on the job.** In most real uses "one kind of mistake (FN or FP) is more costly than the other", and for spam "it often makes sense to prioritize recall… or precision… or some balance of the two". [Google: accuracy, precision and recall](https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall)
 - **"No straight line can sort all 12 of these."** Checked by `npm test`, which tries every line the sliders can make on the lesson's emails. The best sorts 10.
 
+### Many neurons make a network
+
+- **One neuron can only draw one straight line, and some groups can't be split by one.** A single neuron's rule (w1 × x + w2 × y + bias above zero) is a straight line; see the perceptron notes under Teach a neuron. Google's Machine Learning Crash Course shows data where "A linear function cannot cleanly separate all the blue dots from the orange dots", and says neural networks are "designed to find nonlinear patterns in data". [Google: neural networks](https://developers.google.com/machine-learning/crash-course/neural-networks)
+- **Neurons pass answers on to other neurons, in layers.** The same course: "additional layers between the input layer and the output layer are called hidden layers", "the nodes in these layers are called neurons", and the next layer's neurons "are calculated using the hidden layer's neuron values". [Google: nodes and hidden layers](https://developers.google.com/machine-learning/crash-course/neural-networks/nodes-hidden-layers)
+- **Real networks learn their weights in training.** The model "automatically learns the optimal feature crosses to perform on the input data". [Google: neural networks](https://developers.google.com/machine-learning/crash-course/neural-networks)
+- **No straight line fences off just the spam, and the suspicious-email checker needs C to say yes when either neuron does.** Checked by `npm test`: no line the sliders can make sorts either set of emails (the best gets 9 of 10), and no position of the two lines sorts the checker with "both say yes".
+
 ## Software Engineering
 
 ### What a web page is made of
