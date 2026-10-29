@@ -14,7 +14,14 @@ npm run dev       # start the dev server at http://localhost:5173
 npm test          # run the code-engine and lesson tests
 npm run build     # type-check, then build to dist/
 npm run preview   # serve the built site locally
+npm run deploy    # publish to GitHub Pages
 ```
+
+### Put it online
+
+The live site is at **https://silicon-beep.github.io/mindstack/**, served by GitHub Pages from the `gh-pages` branch. To publish your latest changes, run `npm run deploy`. It builds the site and pushes the result to `gh-pages`, and the new version shows up a minute or two later.
+
+The site is built for the `/mindstack/` address. If you rename the repo, change `BASE` in `scripts/deploy-pages.sh` to match.
 
 ## What's in it
 
