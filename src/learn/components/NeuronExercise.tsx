@@ -45,12 +45,23 @@ type PlaneProps = {
   classes: [string, string]
   axes: [string, string]
   focus?: number | null
+  ticks?: [string, string, string]
+  countTests?: boolean
 }
 
-export function NeuronPlane({ weights, points, tests = [], classes, axes, focus = null }: PlaneProps) {
+export function NeuronPlane({ weights, points, tests = [], countTests, classes, axes, focus = null, ticks }: PlaneProps) {
   const { region, edge } = split(weights)
   return (
-    <Plot axes={axes} classes={classes} points={points} tests={tests} focus={focus} answer={(p) => predict(weights, p)}>
+    <Plot
+      axes={axes}
+      classes={classes}
+      points={points}
+      tests={tests}
+      countTests={countTests}
+      focus={focus}
+      ticks={ticks}
+      answer={(p) => predict(weights, p)}
+    >
       {region.length > 2 && <polygon points={region.map((p) => `${px(p.x)},${py(p.y)}`).join(' ')} className="fill-orange-tint" />}
       {edge.length === 2 && (
         <line x1={px(edge[0].x)} y1={py(edge[0].y)} x2={px(edge[1].x)} y2={py(edge[1].y)} strokeWidth={3} strokeLinecap="round" className="stroke-ink" />

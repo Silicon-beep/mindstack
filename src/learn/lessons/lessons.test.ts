@@ -2,6 +2,7 @@
 // Neuron tasks likewise, and where a lesson says what the neuron learns, the data must agree.
 import { describe, expect, it } from 'vitest'
 import { paths, playable } from '../catalog'
+import { cluesOf, doodlePoint, doodleStart, parseDoodle } from '../doodle'
 import { assess, networkSays, predict, trainFully } from '../neuron'
 import { run } from '../robot/interpreter'
 import type { Network, NetworkTask, NeuronPoint } from '../types'
@@ -100,9 +101,42 @@ describe('network lessons', () => {
     for (const { task } of networkTasks) expect(bestSingleLine(task.points)).toBeLessThan(task.points.length)
   })
 
-  it('Many neurons make a network: the suspicious-email checker needs C to say yes when either does', () => {
+  it('Many neurons make a network: the suspicious-email checker needs C to say yes when either one does', () => {
     const [, build] = networkTasks.filter(({ name }) => name.startsWith('many-neurons'))
     for (let a = 0; a <= 10; a += 0.5)
       for (let b = 0; b <= 10; b += 0.5) expect(sorts(build.task, { a, b, rule: 'and' })).toBe(false)
+  })
+})
+
+const doodleTasks = paths.flatMap((path) =>
+  playable(path).flatMap((lesson) =>
+    lesson.screens.flatMap((screen) => (screen.kind === 'doodle' ? [{ name: `${lesson.id}: ${screen.title}`, task: screen.task }] : [])),
+  ),
+)
+
+describe('doodle lessons', () => {
+  it('clues are the box around the drawing', () => {
+    expect(cluesOf(parseDoodle(['......', '..#...', '..#...', '..##..']))).toEqual({ wide: 2, tall: 3 })
+    expect(cluesOf(parseDoodle(['#.....', '.....#']))).toEqual({ wide: 6, tall: 2 })
+    expect(cluesOf(parseDoodle([]))).toBeNull()
+  })
+
+  it.each(doodleTasks)('$name can be done with its solution', ({ task }) => {
+    if (task.mode === 'clues') {
+      const clues = cluesOf(parseDoodle(task.solution.drawing ?? []))
+      expect(clues).not.toBeNull()
+      expect(clues!.tall).toBeGreaterThanOrEqual(task.target!.tallAtLeast)
+      expect(clues!.wide).toBeLessThanOrEqual(task.target!.wideAtMost)
+      return
+    }
+    const examples = (task.solution.examples ?? []).map(({ drawing, label }) => doodlePoint(cluesOf(parseDoodle(drawing))!, label))
+    expect(examples.filter((p) => p.label === 0).length).toBeGreaterThanOrEqual(3)
+    expect(examples.filter((p) => p.label === 1).length).toBeGreaterThanOrEqual(3)
+    const learned = trainFully(doodleStart, examples)
+    expect(examples.every((p) => predict(learned, p) === p.label)).toBe(true)
+    // The new doodle in the solution is a tall, thin rocket, and the trained neuron calls it one.
+    expect(predict(learned, doodlePoint(cluesOf(parseDoodle(task.solution.test ?? []))!, 0))).toBe(0)
+    // The predict screen: a doodle 5 wide and 2 tall is a car.
+    expect(predict(learned, doodlePoint({ wide: 5, tall: 2 }, 1))).toBe(1)
   })
 })

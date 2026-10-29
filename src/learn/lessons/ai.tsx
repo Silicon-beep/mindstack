@@ -1,6 +1,9 @@
+import { learnUi } from '../../content'
+import { DoodleImage } from '../components/DoodleExercise'
 import { NetworkPlane } from '../components/NetworkExercise'
 import { NeuronPlane, show } from '../components/NeuronExercise'
 import { Captioned, Flow, Pair } from '../components/visuals'
+import { cluesOf, doodlePoint, doodleStart, parseDoodle } from '../doodle'
 import { predict, trainFully } from '../neuron'
 import type { Lesson, NeuronPoint, Weights } from '../types'
 
@@ -571,4 +574,110 @@ export const manyNeurons: Lesson = {
   ],
 }
 
-export const aiLessons = [teachANeuron, trainingDataMatters, whenItGetsItWrong, manyNeurons]
+// ---------------------------------------------------------------- 5. Project: train a doodle classifier
+
+const doodleNames = { classes: ['Rocket', 'Car'] as [string, string], axes: ['How wide', 'How tall'] as [string, string] }
+const rockets = [
+  ['...#..', '..###.', '..###.', '..###.', '..###.', '..#.#.'],
+  ['......', '..##..', '..##..', '..##..', '..##..', '..##..'],
+  ['.#....', '###...', '###...', '###...', '#.#...', '......'],
+]
+const cars = [
+  ['......', '......', '..##..', '######', '.#..#.', '......'],
+  ['......', '......', '......', '#####.', '#####.', '.#.#..'],
+  ['......', '......', '......', '......', '######', '.#..#.'],
+]
+const newRocket = ['..##..', '..##..', '..##..', '..##..', '..##..', '..##..']
+const doodleExamples = [...rockets.map((drawing) => ({ drawing, label: 0 as const })), ...cars.map((drawing) => ({ drawing, label: 1 as const }))]
+const doodlePoints = doodleExamples.flatMap(({ drawing, label }) => {
+  const found = cluesOf(parseDoodle(drawing))
+  return found ? [doodlePoint(found, label)] : []
+})
+const learnedDoodles = trainFully(doodleStart, doodlePoints)
+const firstRocket = cluesOf(parseDoodle(rockets[0])) ?? { wide: 0, tall: 0 }
+const wideDoodle = doodlePoint({ wide: 5, tall: 2 }, 1)
+const doodleTicks: [string, string, string] = ['0', '3', '6']
+
+export const doodleClassifier: Lesson = {
+  id: 'doodle-classifier',
+  title: 'Project: train a doodle classifier',
+  minutes: 20,
+  goal: 'Make your own training data, train a neuron on it, and test it with a new doodle.',
+  screens: [
+    {
+      stage: 'see',
+      kind: 'explain',
+      title: 'From doodles to numbers',
+      frames: [
+        {
+          title: 'A neuron can’t see pictures',
+          text: `A neuron only works with numbers, so each doodle becomes two clues: how many squares wide it is, and how many tall. This rocket is ${firstRocket.wide} wide and ${firstRocket.tall} tall.`,
+          visual: (
+            <Captioned caption={learnUi.exercise.doodleClues(firstRocket.wide, firstRocket.tall)}>
+              <DoodleImage drawing={rockets[0]} label={`A rocket doodle, ${learnUi.exercise.doodleClues(firstRocket.wide, firstRocket.tall)}`} />
+            </Captioned>
+          ),
+        },
+        {
+          title: 'Each doodle becomes a dot',
+          text: 'Two clues give every doodle a spot on the chart, just like the fruit and the emails. Tall, thin rockets land top left, and wide, flat cars bottom right, so a neuron can learn a line between them.',
+          visual: (
+            <div className="w-full max-w-sm">
+              <NeuronPlane weights={learnedDoodles} points={doodlePoints} ticks={doodleTicks} {...doodleNames} />
+            </div>
+          ),
+        },
+        {
+          title: 'Real doodle recognisers',
+          text: 'Google’s Quick, Draw! is a game built with machine learning. Its players have drawn 50 million doodles in 345 categories, recorded stroke by stroke. Yours will learn from a handful of doodles and two clues, but the idea is the same: examples in, guesses out.',
+          visual: <Flow steps={['Draw examples', 'Train', 'Test a new doodle']} />,
+        },
+      ],
+    },
+    {
+      stage: 'do',
+      kind: 'predict',
+      title: 'Rocket or car?',
+      prompt: 'This trained neuron sees a new doodle, 5 squares wide and 2 tall: the hollow shape. What does it say?',
+      visual: (
+        <div className="w-full max-w-sm">
+          <NeuronPlane weights={learnedDoodles} points={doodlePoints} tests={[wideDoodle]} ticks={doodleTicks} {...doodleNames} />
+        </div>
+      ),
+      options: [
+        { text: 'Car', correct: true, feedback: 'Yes. It’s wider than it is tall, so its dot lands on the car side of the line.' },
+        { text: 'Rocket', feedback: 'Rockets are taller than they are wide. This doodle is the other way round.' },
+        { text: 'Nothing, it has never seen this doodle', feedback: 'It doesn’t need to have seen it. Its two clues put it on the car side of the line.' },
+      ],
+    },
+    {
+      stage: 'do',
+      kind: 'doodle',
+      title: 'Draw a rocket',
+      intro: 'Draw a rocket: at least 4 squares tall and no more than 2 squares wide. Watch its clues change as you draw.',
+      task: {
+        mode: 'clues',
+        ...doodleNames,
+        target: { tallAtLeast: 4, wideAtMost: 2 },
+        hint: 'Fill a column from top to bottom, no more than 2 squares wide. The clues measure the box around everything you’ve drawn, so one stray square far away makes it wider.',
+        success: 'That’s a rocket shape: tall and thin. Those two numbers are all the neuron will ever know about it.',
+        solution: { drawing: rockets[1] },
+      },
+    },
+    {
+      stage: 'build',
+      kind: 'doodle',
+      title: 'Train your doodle classifier',
+      intro: 'Draw at least 3 rockets and 3 cars, adding each one as you go. Train the neuron until it sorts them all, then draw a new doodle and ask what it thinks it is.',
+      task: {
+        mode: 'classifier',
+        ...doodleNames,
+        hint: 'Make rockets tall and thin, and cars wide and flat. If training never finishes, look for an example on the wrong side, like a rocket that’s wider than it is tall, and start over.',
+        success: 'You built a doodle classifier: you made its training data, trained it, and tested it on a doodle it had never seen.',
+        solution: { examples: doodleExamples, test: newRocket },
+      },
+    },
+  ],
+}
+
+export const aiLessons = [teachANeuron, trainingDataMatters, whenItGetsItWrong, manyNeurons, doodleClassifier]

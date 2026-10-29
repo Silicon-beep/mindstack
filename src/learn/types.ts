@@ -63,6 +63,19 @@ export type NetworkTask = {
   success?: string
 }
 
+// Draw on a 6 × 6 grid. Doodles are written like robot mats: rows of characters, '#' for a filled square.
+export type DoodleTask = {
+  // 'clues': draw something whose clues hit the target. 'classifier': add examples, train, then test.
+  mode: 'clues' | 'classifier'
+  classes: [string, string]
+  axes: [string, string]
+  target?: { tallAtLeast: number; wideAtMost: number }
+  hint: string
+  success: string
+  // For "Show me a solution": a drawing (clues), or examples to train on plus a new doodle to test (classifier).
+  solution: { drawing?: string[]; examples?: { drawing: string[]; label: 0 | 1 }[]; test?: string[] }
+}
+
 type ScreenBase = { stage: Stage; title: string; intro?: string }
 
 export type Screen = ScreenBase &
@@ -73,6 +86,7 @@ export type Screen = ScreenBase &
     | { kind: 'web'; task: WebTask }
     | { kind: 'neuron'; task: NeuronTask }
     | { kind: 'network'; task: NetworkTask }
+    | { kind: 'doodle'; task: DoodleTask }
   )
 
 export type Lesson = {

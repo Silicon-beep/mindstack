@@ -5,6 +5,7 @@ import { AppLink } from '../components/AppLink'
 import { SiteLayout } from '../components/SiteLayout'
 import { learnUi } from '../content'
 import { getLesson } from '../learn/catalog'
+import { DoodleExercise } from '../learn/components/DoodleExercise'
 import { Explainer } from '../learn/components/Explainer'
 import { NetworkExercise } from '../learn/components/NetworkExercise'
 import { NeuronExercise } from '../learn/components/NeuronExercise'
@@ -56,6 +57,8 @@ function ScreenView({ screen, frame, screenKey, onSolved }: { screen: Screen; fr
       return <NeuronExercise task={screen.task} onSolved={onSolved} />
     case 'network':
       return <NetworkExercise task={screen.task} onSolved={onSolved} />
+    case 'doodle':
+      return <DoodleExercise task={screen.task} onSolved={onSolved} />
   }
 }
 

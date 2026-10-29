@@ -51,6 +51,24 @@ test.describe('Keyboard', () => {
     await expect(page.locator('#main')).toBeFocused()
   })
 
+  test('You can draw a doodle with the keyboard', async ({ page }) => {
+    const doodle = lessons.flatMap(({ key, url, lesson }) =>
+      lesson.screens.flatMap((screen, index) => (screen.kind === 'doodle' ? [{ key, url, index }] : [])),
+    )[0]
+    await seed(page, atScreen(doodle.key, doodle.index))
+    await page.goto(doodle.url)
+    const grid = page.getByRole('group', { name: learnUi.exercise.doodleGrid })
+    const square = (row: number, col: number) => grid.getByRole('button', { name: learnUi.exercise.doodleCell(row, col), exact: true })
+    await square(1, 1).focus()
+    await page.keyboard.press('Space')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('Space')
+    await expect(square(2, 1)).toBeFocused()
+    await expect(square(1, 1)).toHaveAttribute('aria-pressed', 'true')
+    await expect(square(2, 1)).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByText(learnUi.exercise.doodleClues(1, 2))).toBeVisible()
+  })
+
   test('A new lesson screen puts focus on its heading', async ({ page }) => {
     const { url, lesson } = lessons[0]
     const [first, second] = lesson.screens

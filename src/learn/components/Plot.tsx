@@ -14,19 +14,22 @@ type Props = {
   axes: [string, string]
   classes: [string, string]
   points: NeuronPoint[]
-  // New examples that weren't trained on, drawn hollow.
+  // New examples that weren't trained on, drawn hollow. countTests: false when their answers aren't known.
   tests?: NeuronPoint[]
+  countTests?: boolean
   answer: (p: NeuronPoint) => 0 | 1
   focus?: number | null
+  // Labels for the start, middle and end of each axis.
+  ticks?: [string, string, string]
   children: ReactNode
 }
 
-export function Plot({ axes, classes, points, tests = [], answer, focus = null, children }: Props) {
+export function Plot({ axes, classes, points, tests = [], countTests = true, answer, focus = null, ticks = ['0', '5', '10'], children }: Props) {
   const copy = learnUi.exercise
   const right = (list: NeuronPoint[]) => list.filter((p) => answer(p) === p.label).length
   const label = [
     `${copy.correctCount(right(points), points.length)}.`,
-    tests.length > 0 && `${copy.testCount(right(tests), tests.length)}.`,
+    tests.length > 0 && countTests && `${copy.testCount(right(tests), tests.length)}.`,
     `${classes[0]} are circles, ${classes[1]} are squares.`,
     tests.length > 0 && copy.testsShape,
   ]
@@ -37,10 +40,10 @@ export function Plot({ axes, classes, points, tests = [], answer, focus = null, 
       <rect x={px(0)} y={py(10)} width={SIZE} height={SIZE} className="fill-violet-tint" />
       {children}
       <rect x={px(0)} y={py(10)} width={SIZE} height={SIZE} strokeWidth={1.5} className="fill-none stroke-ink/30" />
-      {[0, 5, 10].map((v) => (
+      {[0, 5, 10].map((v, i) => (
         <g key={v} className="fill-subtle text-[12px]">
-          <text x={px(v)} y={py(0) + 18} textAnchor="middle">{v}</text>
-          <text x={px(0) - 8} y={py(v) + 4} textAnchor="end">{v}</text>
+          <text x={px(v)} y={py(0) + 18} textAnchor="middle">{ticks[i]}</text>
+          <text x={px(0) - 8} y={py(v) + 4} textAnchor="end">{ticks[i]}</text>
         </g>
       ))}
       <text x={px(5)} y={336} textAnchor="middle" className="fill-muted text-[13px] font-semibold">{axes[0]} →</text>

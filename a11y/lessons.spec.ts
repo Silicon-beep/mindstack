@@ -93,6 +93,7 @@ async function tryEachState(page: Page, screen: Screen) {
       return
 
     case 'network':
+    case 'doodle':
       await button(page, exercise.showHint).click()
       await after('with the hint showing')
       await button(page, exercise.showSolution).click()

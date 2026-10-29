@@ -501,6 +501,19 @@ export const learnUi = {
     networkLegend: (answer: string) => `The shaded area is where the network says “${answer}”.`,
     networkSummary: (a: number, clueA: string, b: number, clueB: string, both: boolean) =>
       `A: ${clueA} above ${a} · B: ${clueB} above ${b} · C: ${both ? 'both' : 'either'} say yes`,
+    doodleGrid: 'Drawing grid, 6 squares by 6',
+    doodleCell: (row: number, col: number) => `Row ${row}, column ${col}`,
+    doodleKeys: 'Tap or drag to draw. With a keyboard: arrow keys move, Space fills or clears a square.',
+    doodleEmpty: 'Draw something to see its clues.',
+    doodleClues: (wide: number, tall: number) => `${wide} square${wide === 1 ? '' : 's'} wide, ${tall} square${tall === 1 ? '' : 's'} tall`,
+    addAs: (name: string) => `Add as a ${name.toLowerCase()}`,
+    clearDrawing: 'Clear the drawing',
+    guess: 'What does it think this is?',
+    guessResult: (name: string) => `It thinks this is a ${name.toLowerCase()}.`,
+    examplesCount: (counts: [number, number], classes: [string, string]) =>
+      `Your examples: ${counts.map((n, i) => `${n} ${classes[i].toLowerCase()}${n === 1 ? '' : 's'}`).join(' and ')}`,
+    doodleSummary: (counts: [number, number], classes: [string, string]) =>
+      `Trained on ${counts.map((n, i) => `${n} ${classes[i].toLowerCase()}${n === 1 ? '' : 's'}`).join(' and ')}`,
   },
   search: {
     title: 'Search',

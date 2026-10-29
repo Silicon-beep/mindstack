@@ -72,6 +72,13 @@ Claims about how MindStack itself behaves (the robot, its mats, the code editor,
 - **Real networks learn their weights in training.** The model "automatically learns the optimal feature crosses to perform on the input data". [Google: neural networks](https://developers.google.com/machine-learning/crash-course/neural-networks)
 - **No straight line fences off just the spam, and the suspicious-email checker needs C to say yes when either neuron does.** Checked by `npm test`: no line the sliders can make sorts either set of emails (the best gets 9 of 10), and no position of the two lines sorts the checker with "both say yes".
 
+### Project: train a doodle classifier
+
+- **A neuron only works with numbers, so a doodle becomes two clues.** A neuron's inputs are numbers multiplied by weights; see the perceptron notes under Teach a neuron. How wide and how tall a doodle is are measured by the lesson's own code (`src/learn/doodle.ts`), and `npm test` checks them.
+- **Google's Quick, Draw! is a game built with machine learning.** Its site calls it "a game built with machine learning" and asks "Can a neural network learn to recognize doodling?" [Quick, Draw!](https://quickdraw.withgoogle.com/)
+- **Its players have drawn 50 million doodles in 345 categories, recorded stroke by stroke.** "The Quick Draw Dataset is a collection of 50 million drawings across 345 categories, contributed by players of the game", and "The drawings were captured as timestamped vectors". [Quick, Draw! dataset](https://github.com/googlecreativelab/quickdraw-dataset)
+- **The example rockets and cars train into a classifier that calls a new tall, thin doodle a rocket and a 5 × 2 doodle a car.** Checked by `npm test`.
+
 ## Software Engineering
 
 ### What a web page is made of

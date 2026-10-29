@@ -28,10 +28,7 @@ const units: Record<string, { title: string; lessons: Entry[] }> = {
   },
   ai: {
     title: 'How machines learn',
-    lessons: [
-      ...aiLessons,
-      soon('doodle-classifier', 'Project: train a doodle classifier', 20),
-    ],
+    lessons: aiLessons,
   },
   robotics: {
     title: 'Sensing the world',
