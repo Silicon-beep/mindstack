@@ -1,0 +1,96 @@
+<!doctype html>
+<!--
+  The preview card that shows when someone shares a MindStack link (public/og-image.png, 1200×630).
+  After editing, remake the PNG from the project folder with:
+
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --hide-scrollbars \
+    --window-size=1200,630 --virtual-time-budget=5000 \
+    --screenshot="$PWD/public/og-image.png" "file://$PWD/scripts/og-image.html"
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; }
+      html, body { width: 1200px; height: 630px; overflow: hidden; }
+      body {
+        font-family: Lexend, system-ui, sans-serif;
+        color: #1b2440;
+        background: #fafafd;
+        display: flex;
+        align-items: center;
+        gap: 56px;
+        padding: 64px 72px;
+        position: relative;
+      }
+      body::before {
+        content: '';
+        position: absolute;
+        right: -120px;
+        top: -140px;
+        width: 640px;
+        height: 640px;
+        border-radius: 50%;
+        background: #f1eeff;
+      }
+      .text, .mat { position: relative; }
+      .text { flex: 1; }
+      .logo { display: flex; align-items: center; gap: 16px; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; }
+      .logo svg { width: 56px; height: 56px; }
+      h1 { margin-top: 36px; font-size: 54px; line-height: 1.1; font-weight: 700; letter-spacing: -0.025em; }
+      .tagline { margin-top: 22px; font-size: 40px; font-weight: 700; letter-spacing: -0.02em; }
+      .violet { color: #5b4be0; }
+      .green { color: #0a8f65; }
+      .orange { color: #d9480f; }
+      .intro { margin-top: 22px; font-size: 24px; line-height: 1.45; color: #4a5373; max-width: 600px; }
+      .mat {
+        flex: none;
+        width: 380px;
+        padding: 24px;
+        background: #fff;
+        border: 1px solid #ecebf5;
+        border-radius: 28px;
+        box-shadow: 0 2px 6px rgba(27, 36, 64, 0.06), 0 16px 36px rgba(27, 36, 64, 0.12);
+      }
+      .mat svg { display: block; width: 100%; height: auto; }
+    </style>
+  </head>
+  <body>
+    <div class="text">
+      <div class="logo">
+        <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#5B4BE0"/><g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7 25 11.5 16 16 7 11.5Z"/><path d="M7 16 16 20.5 25 16"/><path d="M7 20.5 16 25 25 20.5"/></g></svg>
+        MindStack
+      </div>
+      <h1>Learn Software Engineering, Computer Science, AI&nbsp;&amp;&nbsp;Robotics</h1>
+      <p class="tagline"><span class="violet">See it.</span> <span class="green">Do it.</span> <span class="orange">Build it.</span></p>
+      <p class="intro">Visual, hands-on lessons for ADHD minds, visual thinkers and kinesthetic learners.</p>
+    </div>
+
+    <!-- A robot mat like the ones in the lessons: the robot follows the dark tape to the flag. -->
+    <div class="mat">
+      <svg viewBox="0 0 330 330">
+        <g fill="#fafafd" stroke="#ecebf5" stroke-width="2">
+          <rect x="0" y="0" width="330" height="330" rx="16" />
+        </g>
+        <g stroke="#ecebf5" stroke-width="2">
+          <path d="M66 0V330M132 0V330M198 0V330M264 0V330M0 66H330M0 132H330M0 198H330M0 264H330" />
+        </g>
+        <path d="M33 297V165H165V33H297" fill="none" stroke="#1b2440" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" />
+        <g transform="translate(297 33)">
+          <path d="M-12 18V-20" stroke="#066b4b" stroke-width="4" stroke-linecap="round" />
+          <path d="M-12 -20 16 -11 -12 -2Z" fill="#0a8f65" />
+        </g>
+        <g transform="translate(99 165)">
+          <rect x="-24" y="-24" width="48" height="48" rx="14" fill="#5b4be0" />
+          <circle cx="-9" cy="-4" r="5" fill="#fff" />
+          <circle cx="9" cy="-4" r="5" fill="#fff" />
+          <path d="M-8 10H8" stroke="#fff" stroke-width="4" stroke-linecap="round" />
+        </g>
+      </svg>
+    </div>
+  </body>
+</html>

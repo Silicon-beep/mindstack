@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { Route, Routes, useLocation } from 'react-router'
 import { SiteLayout } from './components/SiteLayout'
+import { infoPages } from './content'
 import { HomePage } from './pages/HomePage'
+import { InfoPage } from './pages/InfoPage'
 import { LearnPage } from './pages/LearnPage'
 import { LessonPage } from './pages/LessonPage'
 import { NotFoundPage } from './pages/NotFoundPage'
@@ -41,6 +43,10 @@ export default function App() {
           <Route path="learn" element={<LearnPage />} />
           <Route path="paths/:pathId" element={<PathPage />} />
           <Route path="search" element={<SearchPage />} />
+          <Route path="about" element={<InfoPage page={infoPages.about} />} />
+          <Route path="accessibility" element={<InfoPage page={infoPages.accessibility} />} />
+          <Route path="help" element={<InfoPage page={infoPages.help} />} />
+          <Route path="privacy" element={<InfoPage page={infoPages.privacy} />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         <Route path="learn/:pathId/:lessonId" element={<LessonPage />} />

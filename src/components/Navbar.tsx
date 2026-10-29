@@ -72,9 +72,6 @@ export function Navbar() {
             <div className="w-full max-w-[18rem]">
               <SearchField id="search-desktop" />
             </div>
-            <AppLink href={nav.signIn.href} className="btn btn-dark shrink-0">
-              {nav.signIn.label}
-            </AppLink>
           </div>
 
           <button
@@ -106,9 +103,6 @@ export function Navbar() {
                 </li>
               ))}
             </ul>
-            <AppLink href={nav.signIn.href} onClick={() => setMenuOpen(false)} className="btn btn-dark">
-              {nav.signIn.label}
-            </AppLink>
           </div>
         </div>
       </nav>

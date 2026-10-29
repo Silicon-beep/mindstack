@@ -8,16 +8,15 @@ export const brand = {
   name: 'MindStack',
 }
 
+// Community and Sign in are left out until those pages exist.
 export const nav = {
   links: [
     { label: 'Learn', href: '/learn' },
     { label: 'Projects', href: '/#featured' },
     { label: 'How it works', href: '/#how-it-works' },
-    { label: 'Community', href: '/community' },
   ],
   searchLabel: 'Search MindStack',
   searchPlaceholder: 'Search topics, projects…',
-  signIn: { label: 'Sign in', href: '/signin' },
 } as const
 
 export const hero = {
@@ -31,7 +30,7 @@ export const hero = {
   intro:
     'Visual lessons, hands-on projects and real-world skills — designed for ADHD minds, visual thinkers and kinesthetic learners.',
   primaryCta: { label: 'Start learning', href: '/#paths' },
-  secondaryCta: { label: 'Take the 2-min path quiz', href: '/quiz' },
+  secondaryCta: { label: 'Try your first lesson', href: '/learn/computer-science/algorithms-are-recipes' },
   perks: ['10–15 min lessons', 'Code in your browser', 'No experience needed'],
 } as const
 
@@ -201,6 +200,198 @@ export const footer = {
     { label: 'Privacy', href: '/privacy' },
   ],
 } as const
+
+// ---------------------------------------------------------------- about, accessibility, help, privacy
+// Each page is a title, an intro and a few sections. A section can have paragraphs (`text`),
+// a list of points (`list`) and links shown under it (`links`).
+
+export type InfoPageCopy = {
+  title: string
+  intro: string
+  updated?: string
+  sections: {
+    heading: string
+    text?: string[]
+    list?: { lead: string; text: string }[]
+    links?: { label: string; href: string }[]
+  }[]
+}
+
+const github = 'https://github.com/Silicon-beep/mindstack'
+const reportIssue = `${github}/issues/new`
+
+export const infoPages: Record<'about' | 'accessibility' | 'help' | 'privacy', InfoPageCopy> = {
+  about: {
+    title: 'About MindStack',
+    intro:
+      'MindStack teaches Software Engineering, Computer Science, AI and Robotics to people who learn best by seeing and doing, especially ADHD minds, visual thinkers and kinesthetic learners.',
+    sections: [
+      {
+        heading: 'Every lesson has the same three steps',
+        text: ['The rhythm never changes, so your brain always knows what’s coming next.'],
+        list: [
+          { lead: 'See it', text: 'A short animated explanation shows the idea before any jargon.' },
+          { lead: 'Do it', text: 'Try it straight away and get instant feedback. Mistakes are information, not failure.' },
+          { lead: 'Build it', text: 'Use what you learned in a mini project that’s saved to your portfolio.' },
+        ],
+      },
+      {
+        heading: 'Built for brains that wander',
+        text: [
+          'Lessons take 10–15 minutes and show one clear goal per screen. Focus mode hides everything but the task. There are no streaks and no pressure: you pick up exactly where you left off.',
+        ],
+      },
+      {
+        heading: 'Where it’s at',
+        text: [
+          'MindStack is new. The first lessons are ready in all four paths, and more are on the way. It’s free, and you don’t need an account.',
+        ],
+        links: [
+          { label: 'Start learning', href: '/learn' },
+          { label: 'See the code on GitHub', href: github },
+        ],
+      },
+    ],
+  },
+  accessibility: {
+    title: 'Accessibility',
+    intro:
+      'MindStack is made for people whose brains work differently, so accessibility is part of the design, not an add-on. We aim to meet WCAG 2.2 at level AA.',
+    updated: 'Last updated 29 October 2026',
+    sections: [
+      {
+        heading: 'What’s built in',
+        list: [
+          {
+            lead: 'Reduced motion',
+            text: 'If your device is set to reduce motion, every animation switches off. The robot jumps from square to square instead of gliding.',
+          },
+          { lead: 'Focus mode', text: 'In a lesson, focus mode hides everything except the current task.' },
+          { lead: 'One goal per screen', text: 'Every screen has a single task. Hints and solutions are always one tap away.' },
+          {
+            lead: 'Easy to see and tap',
+            text: 'Text has a contrast of at least 4.5:1, and every button and link is at least 44 pixels tall.',
+          },
+          {
+            lead: 'Keyboard and screen readers',
+            text: 'A clear ring shows where keyboard focus is. Pages use headings and landmarks, icon buttons have labels, and the robot mat describes where the robot is. Moving to a new screen moves focus to its heading.',
+          },
+          { lead: 'No surprises', text: 'Nothing plays by itself, there are no popups, and nothing flashes.' },
+        ],
+      },
+      {
+        heading: 'Using the code editor with a keyboard',
+        text: ['Tab indents your code. To leave the editor, press Esc, then Tab.'],
+      },
+      {
+        heading: 'What we know isn’t perfect yet',
+        text: [
+          'MindStack hasn’t had an independent accessibility audit yet. The robot and neuron exercises are visual at heart. They describe what’s happening in text, but they may not work well with every screen reader yet.',
+        ],
+      },
+      {
+        heading: 'Tell us what gets in your way',
+        text: [
+          'If something on MindStack is hard to use, we want to know. Open an issue on GitHub and tell us which page you were on and what happened. You’ll need a free GitHub account.',
+        ],
+        links: [{ label: 'Report a barrier on GitHub', href: reportIssue }],
+      },
+    ],
+  },
+  help: {
+    title: 'Help',
+    intro: 'Quick answers to common questions.',
+    sections: [
+      {
+        heading: 'Do I need to install anything?',
+        text: ['No. Lessons, code and robots all run in your browser. You don’t need an account either.'],
+      },
+      {
+        heading: 'Where is my progress saved?',
+        text: [
+          'In this browser, on this device. Because there are no accounts, your progress won’t follow you to another browser or device. Clearing your browser’s data for this site erases it.',
+        ],
+      },
+      {
+        heading: 'How do I start over?',
+        text: [
+          'Go to Your learning and choose Clear my progress at the bottom of the page. This removes your progress, code drafts and portfolio projects.',
+        ],
+        links: [{ label: 'Go to Your learning', href: '/learn' }],
+      },
+      {
+        heading: 'I’m stuck on a lesson',
+        text: [
+          'Press Show a hint under the task. Show me a solution appears after the hint, and Start over puts the code back how it began. Using them costs nothing.',
+        ],
+      },
+      {
+        heading: 'How do I use focus mode?',
+        text: [
+          'In a lesson, press the Focus mode button at the top. It hides everything except the current task. Press it again to bring everything back.',
+        ],
+      },
+      {
+        heading: 'Can I use the code editor with a keyboard?',
+        text: ['Yes. Tab indents your code. To leave the editor, press Esc, then Tab.'],
+      },
+      {
+        heading: 'Something isn’t working',
+        text: [
+          'Open an issue on GitHub and tell us which page you were on and what happened. You’ll need a free GitHub account.',
+        ],
+        links: [{ label: 'Report a problem on GitHub', href: reportIssue }],
+      },
+    ],
+  },
+  privacy: {
+    title: 'Privacy',
+    intro: 'MindStack has no accounts, no ads and no tracking. Here’s exactly what happens to your data.',
+    updated: 'Last updated 29 October 2026',
+    sections: [
+      {
+        heading: 'What stays in your browser',
+        text: [
+          'Your progress, code drafts, portfolio projects and focus mode setting are saved in your browser’s local storage. They stay on your device: MindStack has no server to send them to.',
+          'To delete them, choose Clear my progress on Your learning, or clear this site’s data in your browser.',
+        ],
+        links: [{ label: 'Go to Your learning', href: '/learn' }],
+      },
+      {
+        heading: 'Cookies',
+        text: ['MindStack doesn’t use cookies.'],
+      },
+      {
+        heading: 'Services that see your visit',
+        text: ['Two outside services are involved when you load MindStack:'],
+        list: [
+          {
+            lead: 'GitHub Pages',
+            text: 'GitHub hosts the site. It logs every visitor’s IP address for security purposes.',
+          },
+          {
+            lead: 'Google Fonts',
+            text: 'Google supplies the Lexend font. When it loads, Google receives your IP address and the font request. Google Fonts doesn’t set cookies.',
+          },
+        ],
+        links: [
+          {
+            label: 'GitHub’s privacy statement',
+            href: 'https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement',
+          },
+          { label: 'Google Fonts privacy FAQ', href: 'https://developers.google.com/fonts/faq/privacy' },
+        ],
+      },
+      {
+        heading: 'Questions',
+        text: [
+          'Open an issue on GitHub. Anything you write there is public, and GitHub’s privacy statement applies to it.',
+        ],
+        links: [{ label: 'Ask on GitHub', href: reportIssue }],
+      },
+    ],
+  },
+}
 
 // ---------------------------------------------------------------- learning pages
 // Lesson content itself (explanations, code, challenges) lives in src/learn/lessons/.

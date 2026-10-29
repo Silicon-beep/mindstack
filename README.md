@@ -21,7 +21,11 @@ npm run deploy    # publish to GitHub Pages
 
 The live site is at **https://silicon-beep.github.io/mindstack/**, served by GitHub Pages from the `gh-pages` branch. To publish your latest changes, run `npm run deploy`. It builds the site and pushes the result to `gh-pages`, and the new version shows up a minute or two later.
 
-The site is built for the `/mindstack/` address. If you rename the repo, change `BASE` in `scripts/deploy-pages.sh` to match.
+The site is built for the `/mindstack/` address. If you rename the repo, change `BASE` in `scripts/deploy-pages.sh` to match, and the preview-card addresses in `index.html`.
+
+### Preview card
+
+When someone shares a MindStack link, chat apps and social sites show a title, a description and a picture. The tags are in `index.html`, and the picture is `public/og-image.png` (1200×630). To change the picture, edit `scripts/og-image.html` and run the Chrome command at the top of that file.
 
 ## What's in it
 
@@ -32,6 +36,7 @@ The site is built for the `/mindstack/` address. If you rename the repo, change 
 | Path | `/paths/computer-science` | The path's lesson map: what's done, what's next, what's coming soon |
 | Lesson | `/learn/computer-science/how-a-loop-works` | The lesson player, with focus mode |
 | Search | `/search?q=loop` | Finds lessons by title, goal or topic |
+| About, Accessibility, Help, Privacy | `/about`, `/accessibility`, `/help`, `/privacy` | Short info pages linked from the footer. Their wording is `infoPages` in `content.ts` |
 
 Progress, code drafts and portfolio builds are saved in the browser (localStorage). There are no accounts yet and no streaks. "Clear my progress" at the bottom of `/learn` resets everything.
 
@@ -105,7 +110,7 @@ Other places that control the look:
 src/
   content.ts          homepage and page text
   App.tsx             routes
-  pages/              one file per page (Home, Learn, Path, Lesson, Search, Not found)
+  pages/              one file per page (Home, Learn, Path, Lesson, Search, Info, Not found)
   components/         homepage sections, navbar, footer
   learn/
     catalog.ts        which lessons are in each path
