@@ -72,6 +72,8 @@ A lesson is a list of screens. Each screen has a `stage` (`'see'`, `'do'` or `'b
 
 To add one, copy a lesson object in `src/learn/lessons/`, change it, and put it in its path's list in `catalog.ts`, replacing a `soon(...)` entry if there is one. Then run `npm test`: it checks that every robot challenge can be solved by its own solution and that its starter code doesn't already pass. `npm run test:a11y` then checks each screen of the new lesson for accessibility.
 
+Real-world facts in lessons (how a sensor works, what a term means, any number or date) need a reliable source. `src/learn/lessons/SOURCES.md` lists the source for every fact the lessons state, so add yours there.
+
 ### Robot mats and code
 
 Mats are drawn with characters, one per square: `.` floor, `#` wall, `=` dark tape, `*` star, `G` flag, and `^ > v <` for the robot and the way it faces.

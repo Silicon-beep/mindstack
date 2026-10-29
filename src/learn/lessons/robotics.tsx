@@ -124,7 +124,7 @@ export const followTheLine: Lesson = {
       frames: [
         {
           title: 'Three sensors, three questions',
-          text: 'This robot has light sensors pointing ahead, left and right. Each one answers a question: is there line over there?',
+          text: 'This robot has three light sensors that look down at the floor: ahead of it, to its left and to its right. Each one answers a question: is there line over there?',
           visual: (
             <Pair>
               <RobotSnapshot world={corner} />

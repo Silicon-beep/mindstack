@@ -272,7 +272,7 @@ export const styleWithCss: Lesson = {
       stage: 'build',
       kind: 'web',
       title: 'Style your card',
-      intro: 'Turn the profile into a card with a background, some padding and rounded corners. The dot in .card targets the tag with class="card".',
+      intro: 'Turn the profile into a card with a background, some padding and rounded corners. The dot in .card targets every tag with class="card".',
       task: {
         starter:
           '<style>\n  .card {\n    \n  }\n</style>\n\n<div class="card">\n  <h1>Sam Rivera</h1>\n  <p>I like taking things apart to see how they work.</p>\n</div>\n',

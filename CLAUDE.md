@@ -5,7 +5,7 @@ Read README.md first for the project layout, where text and colors live, and how
 ## Use live sources, not memory
 
 - **Library code:** before writing or changing code that uses React, React Router, Vite, Tailwind, Vitest, Playwright, axe or lucide-react, look up the current docs with the Context7 MCP tools for the version in `package.json`. If Context7 isn't connected or is down, use web search and the library's official docs instead. Don't write library APIs from memory.
-- **Lesson facts:** before a lesson states a real-world fact (how a sensor works, an AI or CS concept, a number, a date), check it with web search.
+- **Lesson facts:** before a lesson states a real-world fact (how a sensor works, an AI or CS concept, a number, a date), check it with web search, and add the source to `src/learn/lessons/SOURCES.md`.
 - **Dependencies:** when adding or upgrading one, check its latest release and use a version that's been out for at least 2 weeks.
 
 ## Project rules
