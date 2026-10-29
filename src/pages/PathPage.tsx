@@ -70,9 +70,12 @@ export function PathPage() {
             </div>
           </div>
           {nextUp ? (
-            <AppLink href={`/learn/${path.id}/${nextUp.id}`} className="btn btn-dark shrink-0 self-start lg:self-center">
+            <AppLink
+              href={`/learn/${path.id}/${nextUp.id}`}
+              className="btn btn-dark shrink-0 self-start whitespace-normal lg:self-center"
+            >
               {ctaLabel}
-              <ArrowRight className="h-5 w-5" />
+              <ArrowRight className="h-5 w-5 shrink-0" />
             </AppLink>
           ) : (
             <p className="max-w-xs font-medium">{copy.allDone}</p>

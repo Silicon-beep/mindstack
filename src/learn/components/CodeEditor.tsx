@@ -1,5 +1,6 @@
 import { useImperativeHandle, useLayoutEffect, useRef, type KeyboardEvent, type Ref } from 'react'
 import { learnUi } from '../../content'
+import { useKeyboardScroll } from '../../lib/useKeyboardScroll'
 import { highlight, type Language } from '../highlight'
 
 export type CodeEditorHandle = { insertLine: (snippet: string) => void }
@@ -33,6 +34,7 @@ export function CodeEditor({
   ref,
 }: Props) {
   const textarea = useRef<HTMLTextAreaElement>(null)
+  const scroll = useKeyboardScroll<HTMLPreElement>()
   const pendingCaret = useRef<number | null>(null)
   const escaped = useRef(false)
   const lines = value.split('\n')
@@ -106,7 +108,12 @@ export function CodeEditor({
           ))}
         </div>
         {readOnly ? (
-          <pre aria-label={label} className="min-w-0 flex-1 overflow-x-auto text-white">
+          <pre
+            ref={scroll.ref}
+            tabIndex={scroll.tabIndex}
+            aria-label={label}
+            className="min-w-0 flex-1 overflow-x-auto text-white outline-none"
+          >
             <code>
               {lines.map((line, i) => (
                 <span key={i} className={`block rounded-md px-1 ${i + 1 === activeLine ? 'bg-violet/60' : ''}`}>

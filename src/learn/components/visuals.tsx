@@ -1,6 +1,7 @@
 // Small building blocks for See it screens and predict questions.
 import { Fragment, useMemo, type ReactNode } from 'react'
 import { ArrowRight, RotateCcw } from 'lucide-react'
+import { useKeyboardScroll } from '../../lib/useKeyboardScroll'
 import { highlight, type Language } from '../highlight'
 import { run } from '../robot/interpreter'
 import { LIGHT_ON_FLOOR, LIGHT_ON_LINE, type World } from '../robot/world'
@@ -16,12 +17,17 @@ export function CodeBlock({
   highlight?: number[]
 }) {
   const lines = code.split('\n')
+  const scroll = useKeyboardScroll<HTMLPreElement>()
   return (
-    <pre className="w-full min-w-0 overflow-x-auto rounded-[20px] bg-ink p-4 font-mono text-[14px] leading-7 text-white">
+    <pre
+      ref={scroll.ref}
+      tabIndex={scroll.tabIndex}
+      className="w-full min-w-0 overflow-x-auto rounded-[20px] bg-ink p-4 font-mono text-[14px] leading-7 text-white"
+    >
       <code>
         {lines.map((line, i) => (
           <span key={i} className={`flex rounded-md pr-2 ${lit.includes(i + 1) ? 'bg-violet/60' : ''}`}>
-            <span aria-hidden="true" className="w-8 shrink-0 select-none pr-3 text-right text-white/60">
+            <span aria-hidden="true" className="w-8 shrink-0 select-none pr-3 text-right text-white/70">
               {i + 1}
             </span>
             <span className="whitespace-pre">{line ? highlight(line, language) : ' '}</span>

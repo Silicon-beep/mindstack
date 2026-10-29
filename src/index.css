@@ -33,6 +33,12 @@
   .on-dark :focus-visible {
     outline-color: theme('colors.white');
   }
+
+  /* The lesson player's footer sticks to the bottom of the screen. When Tab moves focus to something
+     further down, scroll far enough that it lands above the footer instead of behind it. */
+  html:has(.lesson-footer) {
+    scroll-padding-bottom: 6rem;
+  }
 }
 
 @layer components {

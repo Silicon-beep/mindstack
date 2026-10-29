@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Check, CirclePlay, Clock, Pause, Play, RotateCcw } from 'lucide-react'
 import { lessonPreview as copy } from '../content'
+import { useKeyboardScroll } from '../lib/useKeyboardScroll'
 import { AppLink } from './AppLink'
 
 type Status = 'preview' | 'running' | 'paused' | 'done'
@@ -61,6 +62,7 @@ const ANNOUNCEMENTS = { preview: '', ...copy.announcements }
 export function LessonPreview() {
   const [ops, setOps] = useState(PREVIEW_OPS)
   const [status, setStatus] = useState<Status>('preview')
+  const scroll = useKeyboardScroll<HTMLPreElement>()
 
   useEffect(() => {
     if (status !== 'running') return
@@ -128,8 +130,12 @@ export function LessonPreview() {
 
       <div className="@container mt-5">
         <div className="grid gap-3 @[33rem]:grid-cols-[1.2fr_1fr]">
-          <div className="flex flex-col rounded-[20px] bg-ink p-4">
-            <pre className="overflow-x-auto font-mono text-[13px] leading-7 text-white @[33rem]:text-[14px] @[33rem]:leading-8">
+          <div className="on-dark flex flex-col rounded-[20px] bg-ink p-4">
+            <pre
+              ref={scroll.ref}
+              tabIndex={scroll.tabIndex}
+              className="overflow-x-auto font-mono text-[13px] leading-7 text-white @[33rem]:text-[14px] @[33rem]:leading-8"
+            >
               <code>
                 {CODE_LINES.map((line, i) => {
                   const active = activeLine === i + 1

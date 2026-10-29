@@ -193,7 +193,7 @@ function LessonPlayer({ path, lesson, number, total, next }: NonNullable<ReturnT
             {builds[key] && (
               <p className="mt-5 rounded-2xl bg-orange-tint px-4 py-3 font-medium text-orange-dark">
                 {copy.savedBuild}{' '}
-                <AppLink href="/learn#portfolio" className="underline underline-offset-4">
+                <AppLink href="/learn#portfolio" className="inline-flex min-h-[44px] items-center underline underline-offset-4">
                   {learnUi.dashboard.portfolioTitle}
                 </AppLink>
               </p>
@@ -235,12 +235,14 @@ function LessonPlayer({ path, lesson, number, total, next }: NonNullable<ReturnT
         )}
       </main>
 
+      {/* index.css keeps whatever has keyboard focus scrolled clear of this sticky footer (.lesson-footer). */}
       {!finished && (
-        <footer className="sticky bottom-0 z-10 border-t border-line bg-white">
+        <footer className="lesson-footer sticky bottom-0 z-10 border-t border-line bg-white">
           <div className="page-container flex min-h-[72px] items-center justify-between gap-3 py-3">
             <button type="button" onClick={handleBack} disabled={index === 0 && frame === 0} className="btn btn-outline">
               <ArrowLeft className="h-5 w-5" />
-              {copy.back}
+              {/* On the narrowest screens Back is just the arrow, so it fits beside a long Next label. */}
+              <span className="max-[359px]:sr-only">{copy.back}</span>
             </button>
             <div className="flex items-center gap-4">
               {!canAdvance && (

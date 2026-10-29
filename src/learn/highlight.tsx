@@ -2,15 +2,16 @@ import type { ReactNode } from 'react'
 
 export type Language = 'python' | 'html'
 
-// Colors are for the dark code panels. Each capture group maps to one class, in order.
+// Colors are for the dark code panels. Each capture group maps to one class, in order. Comments are
+// white/70 so they still pass 4.5:1 on a highlighted (violet) line.
 const RULES: Record<Language, { pattern: RegExp; classes: string[] }> = {
   python: {
     pattern: /(#.*$)|("[^"]*"?|'[^']*'?)|\b(for|in|range|while|if|elif|else|not|and|or|True|False|pass|print)\b|\b(\d+)\b|(\.\w+)/g,
-    classes: ['text-white/60', 'text-orange-icon', 'text-violet-icon', 'text-mint', 'text-blue-icon'],
+    classes: ['text-white/70', 'text-orange-icon', 'text-violet-icon', 'text-mint', 'text-blue-icon'],
   },
   html: {
     pattern: /(<!--.*?-->)|("[^"]*")|(<\/?[\w-]+|\/?>)|([\w-]+)(?=\s*:)|(#[\da-fA-F]{3,6}\b|\b\d+(?:px|rem|em|%)?)/g,
-    classes: ['text-white/60', 'text-orange-icon', 'text-blue-icon', 'text-violet-icon', 'text-mint'],
+    classes: ['text-white/70', 'text-orange-icon', 'text-blue-icon', 'text-violet-icon', 'text-mint'],
   },
 }
 
