@@ -42,7 +42,7 @@ export const lessonPreview = {
   title: 'How a loop works',
   robotLabel: 'What the robot does',
   runButton: { start: 'Try it yourself', pause: 'Pause', resume: 'Resume', again: 'Run it again' },
-  demo: { label: 'Watch 60-sec demo', href: '/learn/computer-science/how-a-loop-works' },
+  demo: { label: 'Start this lesson', href: '/learn/computer-science/how-a-loop-works' },
   status: {
     starting: 'Starting the loop…',
     running: (step: number) => `Running step ${step} of 4`,

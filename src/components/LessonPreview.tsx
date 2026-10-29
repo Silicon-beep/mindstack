@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { Check, CirclePlay, Clock, Pause, Play, RotateCcw } from 'lucide-react'
+import { ArrowRight, Check, Clock, Pause, Play, RotateCcw } from 'lucide-react'
 import { lessonPreview as copy } from '../content'
 import { useKeyboardScroll } from '../lib/useKeyboardScroll'
 import { AppLink } from './AppLink'
@@ -222,8 +222,8 @@ export function LessonPreview() {
           {runLabel}
         </button>
         <AppLink href={copy.demo.href} className="btn btn-outline">
-          <CirclePlay className="h-5 w-5" />
           {copy.demo.label}
+          <ArrowRight className="h-5 w-5" />
         </AppLink>
       </div>
       <p className="sr-only" aria-live="polite">
