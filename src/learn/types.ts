@@ -27,6 +27,7 @@ export type WebTask = { starter: string; checks: WebCheck[]; hint: string; solut
 
 export type Weights = { w1: number; w2: number; b: number }
 export type NeuronPoint = { x: number; y: number; label: 0 | 1 }
+export type NeuronExtra = { name: string; point: NeuronPoint; helps?: boolean }
 export type NeuronTask = {
   mode: 'manual' | 'train'
   points: NeuronPoint[]
@@ -34,8 +35,17 @@ export type NeuronTask = {
   classes: [string, string]
   axes: [string, string]
   hint: string
-  // Manual mode: weights that sort everything, for "Show me a solution". Train mode just trains.
+  // Manual mode: weights that do the task, for "Show me a solution". Train mode just trains.
   solution?: Weights
+  // New examples the neuron never trains on, drawn hollow. With mustPassTests, they must all be right too.
+  tests?: NeuronPoint[]
+  mustPassTests?: boolean
+  // Examples the learner can add to the training data. "Show me a solution" adds the ones that help.
+  extras?: NeuronExtra[]
+  // What counts as done, if not "every example sorted": enough right, or no false alarms (class 0 called class 1).
+  goal?: { atLeast?: number; noFalseAlarms?: boolean; caughtAtLeast?: number }
+  // Said when the task is done, instead of the usual message.
+  success?: string
 }
 
 type ScreenBase = { stage: Stage; title: string; intro?: string }

@@ -30,7 +30,6 @@ const units: Record<string, { title: string; lessons: Entry[] }> = {
     title: 'How machines learn',
     lessons: [
       ...aiLessons,
-      soon('training-data-matters', 'Why training data matters', 12),
       soon('when-it-gets-it-wrong', 'When the neuron gets it wrong', 10),
       soon('many-neurons', 'Many neurons make a network', 14),
       soon('doodle-classifier', 'Project: train a doodle classifier', 20),

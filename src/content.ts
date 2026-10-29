@@ -486,6 +486,13 @@ export const learnUi = {
     trainNote: (guess: string, actual: string) =>
       `It said “${guess}” for an example that was “${actual}”, so it nudged its weights toward the right answer.`,
     legend: 'Shaded areas show what the neuron would answer for any point.',
+    testCount: (right: number, total: number) => `New examples: ${right} of ${total} right`,
+    testsShape: 'New examples it never trained on are hollow.',
+    legendNew: 'New example',
+    addExamples: 'Add to the training data',
+    testsNotYet: (wrong: number) =>
+      `Every training example is sorted, but ${wrong} new example${wrong === 1 ? ' is' : 's are'} still wrong. What kinds of example has it never seen?`,
+    mistakes: (falseAlarms: number, misses: number) => `False alarms: ${falseAlarms} · Missed: ${misses}`,
   },
   search: {
     title: 'Search',

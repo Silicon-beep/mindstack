@@ -52,6 +52,12 @@ Claims about how MindStack itself behaves (the robot, its mats, the code editor,
 - **An artificial neuron multiplies each clue by a weight, adds them up with a bias, and answers yes when the total is above zero. On a chart its rule is a line. It learns by nudging its weights only when it gets one wrong.** This is the perceptron, Frank Rosenblatt's model from 1957–58. [University of Illinois slides](https://courses.grainger.illinois.edu/ECE448/sp2021/slides/lec08.pdf), [University of Utah lecture](https://users.cs.utah.edu/~zhe/pdf/lec-10-perceptron-upload.pdf), [Harvey Mudd notes](https://pages.hmc.edu/ruye/MachineLearning/lectures/ch10/node4.html)
 - **"About 11 presses sort every email."** Checked by running the trainer's own rule on this lesson's emails: it takes exactly 11 presses.
 
+### Why training data matters
+
+- **A model learns from training examples, and the fair test is examples it never trained on.** Google's Machine Learning Crash Course: a training set is what "the model trains on", "You should test a model against a different set of examples than those used to train the model", and "The only fair test of a model is against new examples". [Google: dividing the dataset](https://developers.google.com/machine-learning/crash-course/overfitting/dividing-datasets)
+- **One-sided examples teach the wrong lesson.** The same course calls this coverage bias: it "occurs if data is not selected in a representative fashion". [Google: types of bias](https://developers.google.com/machine-learning/crash-course/fairness/types-of-bias)
+- **What this neuron learns** (size counts for a lot and bumpiness for almost nothing, a big smooth apple is called an orange, all four new fruit are wrong, and adding big apples and small oranges fixes it) is checked by `npm test`, which runs the lesson's own data through the trainer.
+
 ## Software Engineering
 
 ### What a web page is made of

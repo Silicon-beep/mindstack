@@ -1,6 +1,7 @@
-import { NeuronPlane } from '../components/NeuronExercise'
+import { NeuronPlane, show } from '../components/NeuronExercise'
 import { Flow } from '../components/visuals'
-import type { Lesson, NeuronPoint } from '../types'
+import { trainFully } from '../neuron'
+import type { Lesson, NeuronPoint, Weights } from '../types'
 
 const fruit = {
   classes: ['Apple', 'Orange'] as [string, string],
@@ -150,4 +151,134 @@ export const teachANeuron: Lesson = {
   ],
 }
 
-export const aiLessons = [teachANeuron]
+// ---------------------------------------------------------------- 2. Why training data matters
+
+const pt = (x: number, y: number, label: 0 | 1): NeuronPoint => ({ x, y, label })
+const fruitNames = { classes: fruit.classes, axes: fruit.axes }
+// Every apple here is small and every orange is big, so size seems to be all that matters.
+const oneSided = [
+  pt(1.5, 2, 0),
+  pt(2.5, 3.5, 0),
+  pt(3, 1.5, 0),
+  pt(2, 4.5, 0),
+  pt(3.5, 3, 0),
+  pt(7, 6, 1),
+  pt(8, 7.5, 1),
+  pt(7.5, 5.5, 1),
+  pt(8.5, 6.5, 1),
+  pt(6.5, 7.5, 1),
+]
+// Fruit it never trains on. The first is a big, smooth apple.
+const newFruit = [pt(7.5, 1.5, 0), pt(3, 8.5, 1), pt(6, 2.5, 0), pt(4.5, 8, 1)]
+const freshStart = { w1: 0.5, w2: -0.5, b: 0 }
+const learnedOneSided = trainFully(freshStart, oneSided)
+
+function LearnedWeights({ weights }: { weights: Weights }) {
+  const rows: [string, number][] = [
+    ['How much size matters', weights.w1],
+    ['How much bumpiness matters', weights.w2],
+  ]
+  return (
+    <div className="w-full max-w-md rounded-card bg-white p-6 shadow-soft">
+      <p className="font-semibold">What it learned</p>
+      <dl className="mt-4 grid gap-3">
+        {rows.map(([label, value]) => (
+          <div key={label} className="flex items-baseline justify-between gap-4">
+            <dt className="text-muted">{label}</dt>
+            <dd className="font-mono text-lg font-semibold">{show(value)}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
+}
+
+export const trainingDataMatters: Lesson = {
+  id: 'training-data-matters',
+  title: 'Why training data matters',
+  minutes: 12,
+  goal: 'See how the examples a neuron learns from decide what it gets right.',
+  screens: [
+    {
+      stage: 'see',
+      kind: 'explain',
+      title: 'It only knows its examples',
+      frames: [
+        {
+          title: 'It learns from examples',
+          text: 'A neuron learns its line from training examples. In these, every apple is small and every orange is big. Training finds a line that sorts them all.',
+          visual: (
+            <div className="w-full max-w-sm">
+              <NeuronPlane weights={learnedOneSided} points={oneSided} {...fruitNames} />
+            </div>
+          ),
+        },
+        {
+          title: 'It learned the wrong clue',
+          text: 'Look at what it learned: size counts for a lot, and bumpiness for almost nothing. In its examples, big always meant orange, so that’s the rule it picked up.',
+          visual: <LearnedWeights weights={learnedOneSided} />,
+        },
+        {
+          title: 'Test it on new examples',
+          text: 'The only fair test is examples it never trained on. If it gets those wrong, give it the kinds of examples it was missing.',
+          visual: <Flow steps={['Train', 'Test on new examples', 'Add what’s missing']} loop />,
+        },
+      ],
+    },
+    {
+      stage: 'do',
+      kind: 'predict',
+      title: 'What does it say?',
+      prompt: 'A big, smooth apple comes along: the hollow circle. What does this neuron say it is?',
+      visual: (
+        <div className="w-full max-w-sm">
+          <NeuronPlane weights={learnedOneSided} points={oneSided} tests={[newFruit[0]]} {...fruitNames} />
+        </div>
+      ),
+      options: [
+        { text: 'Orange', correct: true, feedback: 'Yes, and it’s wrong. Every big fruit it trained on was an orange, so it says big means orange.' },
+        { text: 'Apple', feedback: 'That’s what it really is, but not what this neuron says. The apple is on the orange side of its line.' },
+        { text: 'It can’t decide', feedback: 'A neuron always gives an answer. This apple is on the orange side of its line.' },
+      ],
+    },
+    {
+      stage: 'do',
+      kind: 'neuron',
+      title: 'Train it, then test it',
+      intro: 'Press Train until every training example is sorted. Then look at the hollow shapes: new fruit it never trained on.',
+      task: {
+        mode: 'train',
+        start: freshStart,
+        points: oneSided,
+        tests: newFruit,
+        ...fruitNames,
+        hint: 'Keep pressing Train. About 10 presses sort every training example.',
+        success: 'Every training example is sorted, but it gets all the new fruit wrong. It learned that big means orange.',
+      },
+    },
+    {
+      stage: 'build',
+      kind: 'neuron',
+      title: 'Fix the training data',
+      intro: 'Add the kinds of fruit the neuron has never seen, then train it until it gets every new fruit right.',
+      task: {
+        mode: 'train',
+        start: freshStart,
+        points: oneSided,
+        tests: newFruit,
+        mustPassTests: true,
+        extras: [
+          { name: 'Another small, smooth apple', point: pt(2.5, 2.5, 0) },
+          { name: 'A big, smooth apple', point: pt(8.5, 2, 0), helps: true },
+          { name: 'Another big, bumpy orange', point: pt(8, 8.5, 1) },
+          { name: 'A small, bumpy orange', point: pt(2, 8, 1), helps: true },
+        ],
+        ...fruitNames,
+        hint: 'Look at which new fruit it gets wrong: a big apple and a small orange. Add those kinds of fruit, then press Train again. More of the same won’t help.',
+        success: 'It gets every new fruit right. Seeing big apples and small oranges taught it that size alone doesn’t tell them apart.',
+      },
+    },
+  ],
+}
+
+export const aiLessons = [teachANeuron, trainingDataMatters]

@@ -1,18 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
+import { Check, Plus } from 'lucide-react'
 import { learnUi } from '../../content'
+import { assess, nudge, predict } from '../neuron'
 import type { NeuronPoint, NeuronTask, Weights } from '../types'
 import { Feedback } from './Feedback'
 import { HelpTools } from './HelpTools'
 
 type P = { x: number; y: number }
 
-export const predict = (w: Weights, p: P) => (w.w1 * p.x + w.w2 * p.y + w.b > 0 ? 1 : 0)
-const round = (n: number) => Math.round(n * 100) / 100
-const show = (n: number) => (n > 0 ? `+${n}` : String(n))
-
-// Perceptron rule. The bias moves faster than the weights so training finishes in a handful of presses.
-const WEIGHT_RATE = 0.1
-const BIAS_RATE = 1
+export const show = (n: number) => (n > 0 ? `+${n}` : String(n))
 
 // The plot covers 0–10 on both axes.
 const LEFT = 44
@@ -50,21 +46,27 @@ function split(w: Weights) {
 type PlaneProps = {
   weights: Weights
   points: NeuronPoint[]
+  // New examples the neuron never trained on, drawn hollow.
+  tests?: NeuronPoint[]
   classes: [string, string]
   axes: [string, string]
   focus?: number | null
 }
 
-export function NeuronPlane({ weights, points, classes, axes, focus = null }: PlaneProps) {
+export function NeuronPlane({ weights, points, tests = [], classes, axes, focus = null }: PlaneProps) {
+  const copy = learnUi.exercise
   const { region, edge } = split(weights)
-  const correct = points.filter((p) => predict(weights, p) === p.label).length
+  const right = (list: NeuronPoint[]) => list.filter((p) => predict(weights, p) === p.label).length
+  const label = [
+    `${copy.correctCount(right(points), points.length)}.`,
+    tests.length > 0 && `${copy.testCount(right(tests), tests.length)}.`,
+    `${classes[0]} are circles, ${classes[1]} are squares.`,
+    tests.length > 0 && copy.testsShape,
+  ]
+    .filter(Boolean)
+    .join(' ')
   return (
-    <svg
-      viewBox="0 0 336 340"
-      role="img"
-      aria-label={`${learnUi.exercise.correctCount(correct, points.length)}. ${classes[0]} are circles, ${classes[1]} are squares.`}
-      className="h-auto w-full"
-    >
+    <svg viewBox="0 0 336 340" role="img" aria-label={label} className="h-auto w-full">
       <rect x={px(0)} y={py(10)} width={SIZE} height={SIZE} className="fill-violet-tint" />
       {region.length > 2 && <polygon points={region.map((p) => `${px(p.x)},${py(p.y)}`).join(' ')} className="fill-orange-tint" />}
       <rect x={px(0)} y={py(10)} width={SIZE} height={SIZE} strokeWidth={1.5} className="fill-none stroke-ink/30" />
@@ -81,18 +83,27 @@ export function NeuronPlane({ weights, points, classes, axes, focus = null }: Pl
       <text x={12} y={py(5)} textAnchor="middle" transform={`rotate(-90 12 ${py(5)})`} className="fill-muted text-[13px] font-semibold">
         {axes[1]} →
       </text>
-      {points.map((p, i) => {
+      {[...points.map((p) => ({ p, hollow: false })), ...tests.map((p) => ({ p, hollow: true }))].map(({ p, hollow }, i) => {
         const x = px(p.x)
         const y = py(p.y)
         const wrong = predict(weights, p) !== p.label
+        const stroke = hollow ? 3 : 0
         return (
           <g key={i}>
             {wrong && <circle cx={x} cy={y} r={14} strokeWidth={2} strokeDasharray="4 3" className="fill-none stroke-ink" />}
             {focus === i && <circle cx={x} cy={y} r={18} strokeWidth={3} className="fill-none stroke-violet-dark" />}
             {p.label === 0 ? (
-              <circle cx={x} cy={y} r={8} className="fill-violet" />
+              <circle cx={x} cy={y} r={8} strokeWidth={stroke} className={hollow ? 'fill-white stroke-violet' : 'fill-violet'} />
             ) : (
-              <rect x={x - 8} y={y - 8} width={16} height={16} rx={3} className="fill-orange-dark" />
+              <rect
+                x={x - 8}
+                y={y - 8}
+                width={16}
+                height={16}
+                rx={3}
+                strokeWidth={stroke}
+                className={hollow ? 'fill-white stroke-orange-dark' : 'fill-orange-dark'}
+              />
             )}
           </g>
         )
@@ -101,7 +112,7 @@ export function NeuronPlane({ weights, points, classes, axes, focus = null }: Pl
   )
 }
 
-function Legend({ classes }: { classes: [string, string] }) {
+function Legend({ classes, tests }: { classes: [string, string]; tests: boolean }) {
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium text-muted">
       <span className="inline-flex items-center gap-2">
@@ -113,6 +124,11 @@ function Legend({ classes }: { classes: [string, string] }) {
       <span className="inline-flex items-center gap-2">
         <span className="h-4 w-4 rounded-full border-2 border-dashed border-ink" /> Sorted wrong
       </span>
+      {tests && (
+        <span className="inline-flex items-center gap-2">
+          <span className="h-4 w-4 rounded-full border-[3px] border-violet bg-white" /> {learnUi.exercise.legendNew}
+        </span>
+      )}
     </div>
   )
 }
@@ -121,38 +137,35 @@ type Props = { task: NeuronTask; onSolved: (summary: string) => void }
 
 export function NeuronExercise({ task, onSolved }: Props) {
   const copy = learnUi.exercise
+  const extras = task.extras ?? []
+  const tests = task.tests ?? []
   const [weights, setWeights] = useState(task.start)
+  const [added, setAdded] = useState(() => extras.map(() => false))
   const [focus, setFocus] = useState<number | null>(null)
   const [note, setNote] = useState<string | null>(null)
   const cursor = useRef(-1)
-  const correct = task.points.filter((p) => predict(weights, p) === p.label).length
-  const solved = correct === task.points.length
+
+  // The training data is the task's examples plus any extras the learner chose to add.
+  const { training, correct, testsRight, falseAlarms, misses, sorted, solved } = assess(task, weights, added)
+  const { goal } = task
 
   useEffect(() => {
     if (solved)
       onSolved(`${show(weights.w1)} × ${task.axes[0]}  ${show(weights.w2)} × ${task.axes[1]}  bias ${show(weights.b)}`)
   }, [solved])
 
-  function trainOnce(w: Weights): Weights {
-    const n = task.points.length
-    for (let k = 1; k <= n; k++) {
-      const i = (cursor.current + k) % n
-      const p = task.points[i]
-      const guess = predict(w, p)
-      if (guess !== p.label) {
-        const d = p.label - guess
-        cursor.current = i
-        setFocus(i)
-        setNote(copy.trainNote(task.classes[guess], task.classes[p.label]))
-        return { w1: round(w.w1 + WEIGHT_RATE * d * p.x), w2: round(w.w2 + WEIGHT_RATE * d * p.y), b: round(w.b + BIAS_RATE * d) }
-      }
-    }
-    return w
+  function trainOnce(w: Weights, points: NeuronPoint[]): Weights {
+    const next = nudge(w, points, cursor.current)
+    if (!next) return w
+    cursor.current = next.index
+    setFocus(next.index)
+    setNote(copy.trainNote(task.classes[next.guess], task.classes[points[next.index].label]))
+    return next.weights
   }
 
-  function train(times: number) {
+  function train(times: number, points = training) {
     let w = weights
-    for (let i = 0; i < times; i++) w = trainOnce(w)
+    for (let i = 0; i < times; i++) w = trainOnce(w, points)
     setWeights(w)
   }
 
@@ -166,16 +179,40 @@ export function NeuronExercise({ task, onSolved }: Props) {
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
       <div className="flex min-w-0 flex-col gap-3">
         <div className="mx-auto w-full max-w-[440px]">
-          <NeuronPlane weights={weights} points={task.points} classes={task.classes} axes={task.axes} focus={focus} />
+          <NeuronPlane weights={weights} points={training} tests={tests} classes={task.classes} axes={task.axes} focus={focus} />
         </div>
-        <Legend classes={task.classes} />
+        <Legend classes={task.classes} tests={tests.length > 0} />
         <p className="text-sm text-muted">{copy.legend}</p>
       </div>
 
       <div className="flex min-w-0 flex-col gap-5">
-        <p aria-live="polite" className="text-2xl font-bold tabular-nums">
-          {copy.correctCount(correct, task.points.length)}
-        </p>
+        <div aria-live="polite">
+          <p className="text-2xl font-bold tabular-nums">{copy.correctCount(correct, training.length)}</p>
+          {tests.length > 0 && <p className="mt-1 text-lg font-semibold tabular-nums text-muted">{copy.testCount(testsRight, tests.length)}</p>}
+          {goal?.noFalseAlarms && <p className="mt-1 text-lg font-semibold tabular-nums text-muted">{copy.mistakes(falseAlarms, misses)}</p>}
+        </div>
+
+        {extras.length > 0 && (
+          <div>
+            <p id="neuron-extras" className="text-sm font-semibold text-muted">
+              {copy.addExamples}
+            </p>
+            <div role="group" aria-labelledby="neuron-extras" className="mt-2 flex flex-wrap gap-2">
+              {extras.map((extra, i) => (
+                <button
+                  key={extra.name}
+                  type="button"
+                  aria-pressed={added[i]}
+                  onClick={() => setAdded(added.map((on, j) => (j === i ? !on : on)))}
+                  className={`inline-flex min-h-[44px] items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors ${added[i] ? 'border-violet-dark bg-violet-tint text-violet-dark' : 'border-ink/15 bg-white hover:border-violet hover:bg-violet-tint'}`}
+                >
+                  {added[i] ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                  {extra.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {task.mode === 'manual' ? (
           <div className="flex flex-col gap-4">
@@ -217,26 +254,40 @@ export function NeuronExercise({ task, onSolved }: Props) {
               ))}
             </dl>
             <div className="flex flex-wrap gap-3">
-              <button type="button" onClick={() => train(1)} disabled={solved} className="btn btn-violet">
+              {/* Once every training example is sorted there's nothing left to learn from. */}
+              <button type="button" onClick={() => train(1)} disabled={sorted} className="btn btn-violet">
                 {copy.train}
               </button>
-              <button type="button" onClick={() => train(5)} disabled={solved} className="btn btn-outline">
+              <button type="button" onClick={() => train(5)} disabled={sorted} className="btn btn-outline">
                 {copy.trainMany}
               </button>
             </div>
-            {note && !solved && <p className="rounded-2xl bg-violet-tint p-4 leading-relaxed text-violet-dark">{note}</p>}
+            {note && !sorted && <p className="rounded-2xl bg-violet-tint p-4 leading-relaxed text-violet-dark">{note}</p>}
           </div>
         )}
 
         <div aria-live="polite">
-          {solved && <Feedback tone="success">{task.mode === 'train' ? copy.trainDone : copy.neuronSolved}</Feedback>}
+          {solved ? (
+            <Feedback tone="success">{task.success ?? (task.mode === 'train' ? copy.trainDone : copy.neuronSolved)}</Feedback>
+          ) : (
+            sorted && task.mustPassTests && <Feedback tone="retry">{copy.testsNotYet(tests.length - testsRight)}</Feedback>
+          )}
         </div>
 
         <HelpTools
           hint={task.hint}
-          onSolution={() => (task.solution ? setWeights(task.solution) : train(50))}
+          onSolution={() => {
+            if (task.solution) {
+              setWeights(task.solution)
+              return
+            }
+            const chosen = extras.map((extra, i) => added[i] || Boolean(extra.helps))
+            setAdded(chosen)
+            train(50, assess(task, weights, chosen).training)
+          }}
           onStartOver={() => {
             setWeights(task.start)
+            setAdded(extras.map(() => false))
             setFocus(null)
             setNote(null)
             cursor.current = -1
